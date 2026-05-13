@@ -895,18 +895,26 @@ async function savePushPrefs(){
       alert("Notifications were blocked or dismissed.\n\nOn iPhone: open Settings → Notifications → scroll to LEGACY → toggle ON. Then come back and tap Save again.");
       resetBtn(); return;
     }
-    if(window.dbgLog) dbgLog('perm OK, calling optIn');
-    // Pre-register the SW manually in case OneSignal's internal call uses wrong path resolution
+    if(window.dbgLog) dbgLog('perm OK, forcing fresh subscribe');
+    // Pre-register the SW manually
     if(navigator.serviceWorker && !window._swRegistered){
       try {
         const reg = await navigator.serviceWorker.register('/Coaches-Schedule-test/OneSignalSDKWorker.js', {scope:'/Coaches-Schedule-test/'});
         window._swRegistered = true;
-        if(window.dbgLog) dbgLog('SW registered manually: '+reg.scope);
+        if(window.dbgLog) dbgLog('SW registered: '+reg.scope);
       } catch(e){ if(window.dbgLog) dbgLog('SW reg err: '+e.message); }
     }
-    // 2. Force subscription registration (this is what actually creates the push token + registers SW)
-    try { await withTimeout(os.User.PushSubscription.optIn(), 15000, 'optIn'); if(window.dbgLog) dbgLog('optIn resolved'); }
+    // Force fresh subscription: optOut clears any stuck "subscribed but no token" state, then optIn creates a real one
+    try { await withTimeout(os.User.PushSubscription.optOut(), 8000, 'optOut'); if(window.dbgLog) dbgLog('optOut done'); }
+    catch(e){ if(window.dbgLog) dbgLog('optOut err: '+e.message); }
+    try { await withTimeout(os.User.PushSubscription.optIn(), 20000, 'optIn'); if(window.dbgLog) dbgLog('optIn resolved'); }
     catch(e){ if(window.dbgLog) dbgLog('optIn err: '+e.message); }
+    // Diagnostic: read the SW's push subscription directly to see if iOS gave us one
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      const sub = await reg.pushManager.getSubscription();
+      if(window.dbgLog) dbgLog('pushManager.sub: '+(sub ? 'EXISTS endpoint='+sub.endpoint.slice(0,40) : 'null'));
+    } catch(e){ if(window.dbgLog) dbgLog('pushSub probe err: '+e.message); }
     // 3. Save tags reflecting preferences
     const tags = {};
     document.querySelectorAll('.np-opt input[type="checkbox"]').forEach(cb=>{
