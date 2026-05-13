@@ -366,7 +366,7 @@ textarea{resize:vertical;min-height:64px;line-height:1.5}
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
   window._dbg = { events: [], lastError: null };
-  function dbgLog(msg){ window._dbg.events.push({t: Date.now(), m: String(msg).slice(0,200)}); renderDebugPanel(); }
+  window.dbgLog = function dbgLog(msg){ window._dbg.events.push({t: Date.now(), m: String(msg).slice(0,200)}); try{ renderDebugPanel(); }catch(e){} };
   window.addEventListener('error', e=>{ window._dbg.lastError = (e.message||'')+' @ '+(e.filename||'')+':'+(e.lineno||''); renderDebugPanel(); });
   window.addEventListener('unhandledrejection', e=>{ window._dbg.lastError = 'unhandled: '+(e.reason && e.reason.message || e.reason || ''); renderDebugPanel(); });
   window.OneSignalDeferred = window.OneSignalDeferred || [];
@@ -868,9 +868,14 @@ function withTimeout(promise, ms, label){
     new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout: '+label)), ms))
   ]);
 }
+function permGranted(os){
+  // OneSignal v16: os.Notifications.permission is BOOLEAN. Native: Notification.permission is STRING.
+  const osPerm = os && os.Notifications && os.Notifications.permission;
+  const nativePerm = (typeof Notification !== 'undefined') ? Notification.permission : null;
+  return osPerm === true || nativePerm === 'granted';
+}
 async function savePushPrefs(){
   const btn=document.getElementById('np-btn');
-  // iOS gate — push only works in PWA-from-home-screen on iPhone/iPad
   if(isIOS() && !isStandalone()){
     alert("To get push notifications on iPhone, the app needs to be installed to your Home Screen first.\n\nSteps:\n1. Tap the Share button at the bottom of Safari (square with up arrow)\n2. Scroll and tap 'Add to Home Screen'\n3. Tap 'Add'\n4. Open the app from the new icon on your Home Screen\n5. Come back here and tap Save again");
     return;
@@ -880,36 +885,34 @@ async function savePushPrefs(){
   const resetBtn=()=>{ btn.disabled=false; refreshPushUI(); };
   try {
     const os = await withTimeout(waitForOneSignal(), 6000, 'OneSignal init');
-    // 1. Request permission (user-initiated tap satisfies iOS)
-    let permission = (os.Notifications && os.Notifications.permission) || Notification.permission;
-    if(permission !== 'granted'){
-      try { await withTimeout(os.Notifications.requestPermission(), 15000, 'permission'); } catch(e){}
-      permission = (os.Notifications && os.Notifications.permission) || Notification.permission;
+    if(window.dbgLog) dbgLog('savePushPrefs start, granted='+permGranted(os));
+    // 1. Request permission if not already granted
+    if(!permGranted(os)){
+      try { await withTimeout(os.Notifications.requestPermission(), 15000, 'permission'); } catch(e){ if(window.dbgLog) dbgLog('reqPerm err: '+e.message); }
     }
-    if(permission !== 'granted'){
+    if(!permGranted(os)){
       alert("Notifications were blocked or dismissed.\n\nOn iPhone: open Settings → Notifications → scroll to LEGACY → toggle ON. Then come back and tap Save again.");
       resetBtn(); return;
     }
-    // 2. Make sure we're opted-in on OneSignal's side
-    try { await withTimeout(os.User.PushSubscription.optIn(), 8000, 'optIn'); } catch(e){ console.log('[push] optIn warning', e); }
+    if(window.dbgLog) dbgLog('perm OK, calling optIn');
+    // 2. Force subscription registration (this is what actually creates the push token + registers SW)
+    try { await withTimeout(os.User.PushSubscription.optIn(), 15000, 'optIn'); if(window.dbgLog) dbgLog('optIn resolved'); }
+    catch(e){ if(window.dbgLog) dbgLog('optIn err: '+e.message); }
     // 3. Save tags reflecting preferences
     const tags = {};
     document.querySelectorAll('.np-opt input[type="checkbox"]').forEach(cb=>{
       tags[cb.dataset.tag] = cb.checked ? '1' : '0';
     });
-    try { await withTimeout(os.User.addTags(tags), 6000, 'addTags'); } catch(e){ console.log('[push] addTags warning', e); }
+    try { await withTimeout(os.User.addTags(tags), 6000, 'addTags'); if(window.dbgLog) dbgLog('addTags done'); }
+    catch(e){ if(window.dbgLog) dbgLog('addTags err: '+e.message); }
     await refreshPushUI();
     btn.disabled=false;
     alert("You're subscribed. We'll send you a push for whatever you checked.");
   } catch(e){
-    console.log('[push] save error', e);
+    if(window.dbgLog) dbgLog('save error: '+e.message);
     btn.disabled=false;
     btn.textContent='Save & enable notifications';
-    if(isIOS() && !isStandalone()){
-      alert("This needs the app to be installed to your Home Screen first. Tap Share → Add to Home Screen, then open from the new icon.");
-    } else {
-      alert("Couldn't enable notifications. Open Settings → Notifications → LEGACY and turn them on, then try again.");
-    }
+    alert("Couldn't enable notifications. Open Settings → Notifications → LEGACY and turn them on, then try again.");
   }
 }
 
