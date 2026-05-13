@@ -377,9 +377,10 @@ textarea{resize:vertical;min-height:64px;line-height:1.5}
         appId: "25f302c0-9af7-4be5-9683-2e60b2c22e58",
         autoResubscribe: true,
         notifyButton: { enable: false },
-        // GitHub Pages serves this project from /Coaches-Schedule-test/ — tell OneSignal where the SW lives
-        serviceWorkerPath: "Coaches-Schedule-test/OneSignalSDKWorker.js",
-        serviceWorkerParam: { scope: "/Coaches-Schedule-test/" }
+        // GitHub Pages serves this project from /Coaches-Schedule-test/ — absolute path so SW resolves correctly
+        serviceWorkerPath: "/Coaches-Schedule-test/OneSignalSDKWorker.js",
+        serviceWorkerParam: { scope: "/Coaches-Schedule-test/" },
+        serviceWorkerOverrideForTypicalSite: true
       });
       dbgLog('init resolved');
       window._OS = OneSignal;
@@ -895,6 +896,14 @@ async function savePushPrefs(){
       resetBtn(); return;
     }
     if(window.dbgLog) dbgLog('perm OK, calling optIn');
+    // Pre-register the SW manually in case OneSignal's internal call uses wrong path resolution
+    if(navigator.serviceWorker && !window._swRegistered){
+      try {
+        const reg = await navigator.serviceWorker.register('/Coaches-Schedule-test/OneSignalSDKWorker.js', {scope:'/Coaches-Schedule-test/'});
+        window._swRegistered = true;
+        if(window.dbgLog) dbgLog('SW registered manually: '+reg.scope);
+      } catch(e){ if(window.dbgLog) dbgLog('SW reg err: '+e.message); }
+    }
     // 2. Force subscription registration (this is what actually creates the push token + registers SW)
     try { await withTimeout(os.User.PushSubscription.optIn(), 15000, 'optIn'); if(window.dbgLog) dbgLog('optIn resolved'); }
     catch(e){ if(window.dbgLog) dbgLog('optIn err: '+e.message); }
