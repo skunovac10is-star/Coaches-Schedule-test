@@ -365,19 +365,90 @@ textarea{resize:vertical;min-height:64px;line-height:1.5}
 <!-- OneSignal Web Push — STAGING APP (separate from production, won't notify real coaches) -->
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
+  window._dbg = { events: [], lastError: null };
+  function dbgLog(msg){ window._dbg.events.push({t: Date.now(), m: String(msg).slice(0,200)}); renderDebugPanel(); }
+  window.addEventListener('error', e=>{ window._dbg.lastError = (e.message||'')+' @ '+(e.filename||'')+':'+(e.lineno||''); renderDebugPanel(); });
+  window.addEventListener('unhandledrejection', e=>{ window._dbg.lastError = 'unhandled: '+(e.reason && e.reason.message || e.reason || ''); renderDebugPanel(); });
   window.OneSignalDeferred = window.OneSignalDeferred || [];
   OneSignalDeferred.push(async function(OneSignal) {
-    await OneSignal.init({
-      appId: "25f302c0-9af7-4be5-9683-2e60b2c22e58",
-      autoResubscribe: true,
-      notifyButton: { enable: false }
-    });
+    dbgLog('SDK callback fired');
     try {
-      const optedIn = OneSignal.User.PushSubscription.optedIn;
-      const id = OneSignal.User.PushSubscription.id;
-      console.log('[OneSignal STAGING] optedIn:', optedIn, 'subId:', id);
-    } catch(e){ console.log('[OneSignal STAGING] state probe error:', e); }
+      await OneSignal.init({
+        appId: "25f302c0-9af7-4be5-9683-2e60b2c22e58",
+        autoResubscribe: true,
+        notifyButton: { enable: false }
+      });
+      dbgLog('init resolved');
+      window._OS = OneSignal;
+      try {
+        OneSignal.User.PushSubscription.addEventListener('change', e=>{
+          dbgLog('PushSubscription change: optedIn='+(e.current && e.current.optedIn));
+        });
+        OneSignal.Notifications.addEventListener('permissionChange', granted=>{
+          dbgLog('permissionChange: '+granted);
+        });
+      } catch(e){ dbgLog('listener err: '+e.message); }
+      renderDebugPanel();
+    } catch(e){ window._dbg.lastError = 'init: '+e.message; renderDebugPanel(); }
   });
+
+  function renderDebugPanel(){
+    let el = document.getElementById('dbg-panel');
+    if(!el){
+      el = document.createElement('div');
+      el.id = 'dbg-panel';
+      el.style.cssText = 'position:fixed;left:0;right:0;bottom:calc(72px + env(safe-area-inset-bottom));background:#0F1014;color:#fff;font-family:monospace;font-size:11px;line-height:1.45;padding:10px 12px;z-index:200;max-height:42vh;overflow-y:auto;border-top:2px solid #E0863A';
+      const close = document.createElement('button');
+      close.textContent = '×';
+      close.style.cssText = 'position:absolute;top:4px;right:8px;background:transparent;border:none;color:#fff;font-size:18px;cursor:pointer';
+      close.onclick = ()=>{ el.style.display='none'; };
+      el.appendChild(close);
+      document.body.appendChild(el);
+    }
+    const standalone = (window.navigator.standalone === true) || window.matchMedia('(display-mode: standalone)').matches;
+    const isIOSdev = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const perm = (window.Notification && Notification.permission) || 'n/a';
+    let osPerm='n/a', optedIn='n/a', subId='n/a', userId='n/a', token='n/a';
+    try { if(window._OS){
+      osPerm = (_OS.Notifications && _OS.Notifications.permission) ?? 'n/a';
+      optedIn = (_OS.User && _OS.User.PushSubscription && _OS.User.PushSubscription.optedIn);
+      subId = (_OS.User && _OS.User.PushSubscription && _OS.User.PushSubscription.id) || 'null';
+      token = (_OS.User && _OS.User.PushSubscription && _OS.User.PushSubscription.token) || 'null';
+      userId = (_OS.User && _OS.User.onesignalId) || 'null';
+    }} catch(e){}
+    let sw='n/a';
+    if(navigator.serviceWorker){
+      navigator.serviceWorker.getRegistrations().then(rs=>{
+        const txt = rs.length ? rs.map(r=>r.active?(r.scope+' ✓'):(r.scope+' (pending)')).join('\n      ') : 'none registered';
+        const swLine = document.getElementById('dbg-sw');
+        if(swLine) swLine.textContent = 'SW:    '+txt;
+      });
+    }
+    const events = (window._dbg.events||[]).slice(-6).map(e=>'  • '+e.m).join('\n') || '  (none)';
+    el.innerHTML = '<div style="font-weight:700;color:#E0863A;margin-bottom:6px">⚙ DEBUG (staging only)</div>' +
+      '<div>iOS:</div>' +
+      '<div>  device:'+isIOSdev+'  standalone:'+standalone+'</div>' +
+      '<div>Permission:</div>' +
+      '<div>  Notification.permission = '+perm+'</div>' +
+      '<div>  OneSignal.perm = '+osPerm+'</div>' +
+      '<div>OneSignal:</div>' +
+      '<div>  loaded = '+!!window._OS+'</div>' +
+      '<div>  optedIn = '+optedIn+'</div>' +
+      '<div>  subId = '+String(subId).slice(0,40)+'</div>' +
+      '<div>  userId = '+String(userId).slice(0,40)+'</div>' +
+      '<div>  token = '+(token==='null'?'null':'set ('+String(token).length+' chars)')+'</div>' +
+      '<div id="dbg-sw">SW:    checking…</div>' +
+      '<div>Last error:</div>' +
+      '<div style="color:#ff8a80">  '+(window._dbg.lastError||'none')+'</div>' +
+      '<div>Events (last 6):</div>' +
+      '<div style="white-space:pre">'+events+'</div>' +
+      '<button onclick="this.parentNode.style.display=\'none\'" style="position:absolute;top:4px;right:8px;background:transparent;border:none;color:#fff;font-size:18px;cursor:pointer">×</button>';
+  }
+  // Re-render every 2s so the panel reflects current state
+  setInterval(renderDebugPanel, 2000);
+  // First render after DOM ready
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', renderDebugPanel);
+  else setTimeout(renderDebugPanel, 100);
 </script>
 </head>
 <body class="locked">
