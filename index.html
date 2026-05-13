@@ -362,11 +362,22 @@ textarea{resize:vertical;min-height:64px;line-height:1.5}
 @media (max-width:640px){.news-title{font-size:20px}.news-item{padding:.85rem .95rem}}
 </style>
 
-<!-- OneSignal Web Push — DISABLED IN STAGING (so test runs don't notify real coaches) -->
+<!-- OneSignal Web Push — STAGING APP (separate from production, won't notify real coaches) -->
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
-  console.log("[staging] OneSignal disabled. Real pushes won't be sent from this environment.");
-  // Provide a no-op OneSignal shim so the rest of the app code doesn't error out.
-  window.OneSignalDeferred = { push: function(){} };
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: "25f302c0-9af7-4be5-9683-2e60b2c22e58",
+      autoResubscribe: true,
+      notifyButton: { enable: false }
+    });
+    try {
+      const optedIn = OneSignal.User.PushSubscription.optedIn;
+      const id = OneSignal.User.PushSubscription.id;
+      console.log('[OneSignal STAGING] optedIn:', optedIn, 'subId:', id);
+    } catch(e){ console.log('[OneSignal STAGING] state probe error:', e); }
+  });
 </script>
 </head>
 <body class="locked">
