@@ -740,7 +740,15 @@ textarea{resize:vertical;min-height:64px;line-height:1.5}
     <div class="news-sub">Recent updates and announcements. Newest first.</div>
   </div>
 
-  <div class="notif-prefs" id="notif-prefs">
+  <div class="news-tabs" id="news-tabs">
+    <button class="ntab active" data-cat="alert">🚨 Alerts <span class="ntab-count" id="nt-c-alert">0</span></button>
+    <button class="ntab" data-cat="all">📰 All feeds <span class="ntab-count" id="nt-c-all">0</span></button>
+    <button class="ntab" data-cat="calendar">📅 Dates to remember <span class="ntab-count" id="nt-c-calendar">0</span></button>
+  </div>
+  <div id="news-list" class="news-list"></div>
+  <div id="news-empty" class="news-empty" style="display:none">No updates in this category yet.</div>
+
+  <div class="notif-prefs" id="notif-prefs" style="margin-top:1.5rem">
     <div class="np-head">
       <span class="np-icon">🔔</span>
       <div class="np-title-block">
@@ -756,13 +764,6 @@ textarea{resize:vertical;min-height:64px;line-height:1.5}
     <button class="np-btn" id="np-btn" onclick="savePushPrefs()">Save & enable notifications</button>
     <div class="np-foot" id="np-foot">If you don't see a permission prompt after tapping Save, make sure you opened the app from your Home Screen icon (not Safari). On iPhone, go to Settings → Notifications → LEGACY to enable.</div>
   </div>
-  <div class="news-tabs" id="news-tabs">
-    <button class="ntab active" data-cat="alert">🚨 Alerts <span class="ntab-count" id="nt-c-alert">0</span></button>
-    <button class="ntab" data-cat="all">📰 All feeds <span class="ntab-count" id="nt-c-all">0</span></button>
-    <button class="ntab" data-cat="calendar">📅 Dates to remember <span class="ntab-count" id="nt-c-calendar">0</span></button>
-  </div>
-  <div id="news-list" class="news-list"></div>
-  <div id="news-empty" class="news-empty" style="display:none">No updates in this category yet.</div>
 </div>
 
 <script>
