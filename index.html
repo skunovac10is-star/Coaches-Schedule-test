@@ -172,6 +172,10 @@ body{padding-left:240px;padding-top:58px}
 .dtab:hover{border-color:var(--black);color:var(--black)}
 .dtab.active{background:var(--black);border-color:var(--black);color:#fff;box-shadow:0 4px 12px rgba(10,10,10,.15)}
 .dtab.active .dt-name{opacity:.8}
+.dtab.future{border-style:dashed;border-color:#E0863A;background:#FFF8EE;color:#7A4A0C}
+.dtab.future .dt-name{color:#B5712A;opacity:.85}
+.dtab.future.active{background:#E0863A;border-style:solid;border-color:#E0863A;color:#fff;box-shadow:0 4px 12px rgba(224,134,58,.25)}
+.dtab.future.active .dt-name{color:#fff;opacity:.85}
 .sidebar-legend{margin-top:auto;padding:14px 6px 10px;border-top:1px solid rgba(255,255,255,.08)}
 .sl-title{color:rgba(255,255,255,.45);font-size:10px;font-weight:700;letter-spacing:.9px;text-transform:uppercase;margin:0 8px 8px}
 .sl-section{margin-bottom:10px}
@@ -1202,10 +1206,20 @@ function renderTeamNotes(){
   list.innerHTML=active.map(n=>`<li><span class="tn-who">${n.who}</span> <span class="tn-date">${fmtNoteRange(n.start,n.end)}</span> ${n.what}</li>`).join('');
 }
 
-// Week of May 11, 2026 (Mon) — Session 3 Week 9
-const WEEK_START_BASE = new Date(2026, 4, 11);
+// Auto-shifting week — anchored to Session 3 Week 9 (May 11, 2026 = Mon)
+// WEEK_START_BASE recomputes each load, so on Sun→Mon rollover the app auto-advances.
+const _WEEK_ANCHOR_DATE = new Date(2026, 4, 11);
+const _WEEK_ANCHOR_NUM = 9;
+function _thisMonday(){
+  const d=new Date(); d.setHours(0,0,0,0);
+  const dow=d.getDay();              // Sun=0..Sat=6
+  const shift=(dow===0)?-6:(1-dow);  // back to Monday
+  d.setDate(d.getDate()+shift);
+  return d;
+}
+const WEEK_START_BASE = _thisMonday();
 const SESSION_NUM = 3;
-const WEEK_NUM_BASE = 9;
+const WEEK_NUM_BASE = _WEEK_ANCHOR_NUM + Math.round((WEEK_START_BASE - _WEEK_ANCHOR_DATE)/(7*24*3600*1000));
 let weekOffset = 0;
 let WEEK_START = new Date(WEEK_START_BASE);
 let WEEK_NUM = WEEK_NUM_BASE;
@@ -1271,11 +1285,14 @@ function buildSchedTabs(){
   const cont=document.getElementById('sched-day-tabs');
   cont.innerHTML='';
   const todayName=todayDayName();
+  const isFuture = weekOffset>0;
   DAYS_ORDER.forEach((d,i)=>{
     const t=document.createElement('div');
-    t.className='dtab'+(d===todayName?' active':'');
+    const activeDay = isFuture ? 'Monday' : todayName;
+    t.className='dtab'+(d===activeDay?' active':'')+(isFuture?' future':'');
     const dt=dateForDay(i);
-    t.innerHTML=`<span class="dt-name">${d.slice(0,3)}</span><span class="dt-date">${dt.getDate()}</span>`;
+    const nameLabel = isFuture ? `${MONTHS_SHORT[dt.getMonth()].toUpperCase()} ${d.slice(0,3)}` : d.slice(0,3);
+    t.innerHTML=`<span class="dt-name">${nameLabel}</span><span class="dt-date">${dt.getDate()}</span>`;
     t.onclick=()=>{
       document.querySelectorAll('#sched-day-tabs .dtab').forEach(x=>x.classList.remove('active'));
       t.classList.add('active');
