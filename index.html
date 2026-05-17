@@ -1269,6 +1269,7 @@ function todayDayName(){
 
 function buildSchedTabs(){
   const cont=document.getElementById('sched-day-tabs');
+  cont.innerHTML='';
   const todayName=todayDayName();
   DAYS_ORDER.forEach((d,i)=>{
     const t=document.createElement('div');
