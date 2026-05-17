@@ -744,11 +744,12 @@ textarea{resize:vertical;min-height:64px;line-height:1.5}
     <button class="ntab active" data-cat="alert">🚨 Alerts <span class="ntab-count" id="nt-c-alert">0</span></button>
     <button class="ntab" data-cat="all">📰 All feeds <span class="ntab-count" id="nt-c-all">0</span></button>
     <button class="ntab" data-cat="calendar">📅 Dates to remember <span class="ntab-count" id="nt-c-calendar">0</span></button>
+    <button class="ntab" data-cat="push">🔔 Push notifications</button>
   </div>
   <div id="news-list" class="news-list"></div>
   <div id="news-empty" class="news-empty" style="display:none">No updates in this category yet.</div>
 
-  <div class="notif-prefs" id="notif-prefs" style="margin-top:1.5rem">
+  <div class="notif-prefs" id="notif-prefs" style="display:none;margin-top:.25rem">
     <div class="np-head">
       <span class="np-icon">🔔</span>
       <div class="np-title-block">
@@ -1125,11 +1126,20 @@ function newsCounts(){
 function renderNews(){
   const list=document.getElementById('news-list');
   const empty=document.getElementById('news-empty');
+  const prefs=document.getElementById('notif-prefs');
   if(!list) return;
   const c=newsCounts();
   ['alert','all','calendar'].forEach(cat=>{
     const el=document.getElementById('nt-c-'+cat); if(el) el.textContent=c[cat];
   });
+  // Push notifications tab — show prefs card, hide news list
+  if(_activeNewsCat==='push'){
+    list.innerHTML='';
+    if(empty) empty.style.display='none';
+    if(prefs) prefs.style.display='block';
+    return;
+  }
+  if(prefs) prefs.style.display='none';
   const items=newsForCategory(_activeNewsCat);
   if(!items.length){
     list.innerHTML='';
