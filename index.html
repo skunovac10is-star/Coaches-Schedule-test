@@ -155,6 +155,16 @@ body{padding-left:240px;padding-top:58px}
 .tn-who{font-weight:600;color:#1a1a1a}
 .tn-date{color:#6B4B00;font-weight:500}
 @media (max-width:640px){.team-notes{padding:.75rem .9rem}.tn-list li{font-size:12.5px}}
+.week-nav{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 10px;padding:6px 4px}
+.wn-btn{appearance:none;border:1.5px solid var(--gray-200);background:#fff;color:var(--gray-700);width:34px;height:34px;border-radius:50%;font-size:18px;line-height:1;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:all .12s}
+.wn-btn:hover:not(:disabled){border-color:var(--black);color:var(--black)}
+.wn-btn:disabled{opacity:.35;cursor:not-allowed}
+.wn-label{flex:1;text-align:center;font-weight:700;font-size:14px;color:var(--gray-700);display:flex;flex-direction:column;gap:2px;line-height:1.1}
+.wn-label .wn-main{font-size:14px;color:#1a1a1a}
+.wn-label .wn-sub{font-size:11px;color:var(--gray-500);font-weight:500}
+.wn-draft{display:inline-block;margin-left:6px;font-size:9.5px;letter-spacing:.6px;padding:2px 7px;border-radius:8px;background:#FAEEDA;color:#7A4A0C;font-weight:700;text-transform:uppercase;vertical-align:middle}
+.next-week-banner{background:#FFF7E6;border:1px solid #F2D7A0;color:#7A4A0C;border-radius:12px;padding:.65rem .85rem;font-size:12.5px;margin-bottom:1rem;display:flex;align-items:flex-start;gap:8px}
+.next-week-banner .nwb-ic{font-size:14px;line-height:1.1}
 .day-tabs{display:flex;gap:5px;margin-bottom:1.25rem;flex-wrap:wrap}
 .dtab{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 14px;border-radius:14px;cursor:pointer;border:1.5px solid var(--gray-200);color:var(--gray-700);background:#fff;transition:all .12s;flex-shrink:0;line-height:1.1;min-width:60px}
 .dtab .dt-name{font-size:10px;letter-spacing:.7px;text-transform:uppercase;font-weight:700;opacity:.65}
@@ -575,6 +585,18 @@ textarea{resize:vertical;min-height:64px;line-height:1.5}
     <div class="tn-head"><span class="tn-icon">📌</span><span class="tn-title">Team notes</span></div>
     <ul class="tn-list" id="tn-list"></ul>
   </div>
+  <div class="week-nav" id="week-nav">
+    <button class="wn-btn" id="wn-prev" onclick="changeWeek(-1)" aria-label="Previous week">‹</button>
+    <div class="wn-label" id="wn-label">
+      <span class="wn-main">This week</span>
+      <span class="wn-sub" id="wn-sub">Session 3 · Week 9</span>
+    </div>
+    <button class="wn-btn" id="wn-next" onclick="changeWeek(1)" aria-label="Next week">›</button>
+  </div>
+  <div class="next-week-banner" id="next-week-banner" style="display:none">
+    <span class="nwb-ic">📝</span>
+    <span><strong>Draft preview.</strong> Next week's schedule is shown as a copy of the current week. Sanjin will finalize it before the week starts.</span>
+  </div>
   <div class="day-tabs" id="sched-day-tabs"></div>
   <div class="timeline" id="timeline"></div>
 </div>
@@ -983,7 +1005,7 @@ function printWeek(){
   DAYS_ORDER.forEach((d,i)=>{
     const dt=dateForDay(i);
     html+=`<h2 style="font-family:Inter,sans-serif;margin:18px 0 8px;font-size:16px;border-bottom:2px solid #000;padding-bottom:4px">${d} — ${MONTHS_SHORT[dt.getMonth()]} ${dt.getDate()}</h2>`;
-    (SCHEDULE[d]||[]).forEach(s=>{
+    (ACTIVE_SCHEDULE[d]||[]).forEach(s=>{
       const chips=s.coaches.join(', ');
       const ct=(s.courts!=null)?s.courts:(DEFAULT_COURTS[s.type]||1);
       html+=`<div style="margin:4px 0;font-size:12px;line-height:1.4"><b>${s.time}</b> &nbsp; ${s.name} <span style="color:#666">(${ct} courts, ${s.coaches.length} coaches)</span><br><span style="margin-left:1rem">${chips}</span></div>`;
@@ -1002,7 +1024,7 @@ function showResetHelp(){
 }
 
 function getScheduledAbbrs(dayName){
-  const d = SCHEDULE[dayName]; if(!d) return new Set();
+  const d = ACTIVE_SCHEDULE[dayName]; if(!d) return new Set();
   const s = new Set(); d.forEach(sess=>sess.coaches.forEach(c=>s.add(c))); return s;
 }
 
@@ -1042,7 +1064,7 @@ function metaHtml(s){
 function renderSchedule(day){
   const tl = document.getElementById('timeline');
   tl.innerHTML='';
-  (SCHEDULE[day]||[]).forEach(s=>{
+  (ACTIVE_SCHEDULE[day]||[]).forEach(s=>{
     const row=document.createElement('div');
     row.className='t-row';
     const chips=s.coaches.map(c=>`<span class="chip ${chipCls(c)}">${c}</span>`).join('');
@@ -1181,8 +1203,52 @@ function renderTeamNotes(){
 }
 
 // Week of May 11, 2026 (Mon) — Session 3 Week 9
-const WEEK_START = new Date(2026, 4, 11);
-const SESSION_NUM = 3, WEEK_NUM = 9;
+const WEEK_START_BASE = new Date(2026, 4, 11);
+const SESSION_NUM = 3;
+const WEEK_NUM_BASE = 9;
+let weekOffset = 0;
+let WEEK_START = new Date(WEEK_START_BASE);
+let WEEK_NUM = WEEK_NUM_BASE;
+// Active schedule pointer — swapped by changeWeek()
+let ACTIVE_SCHEDULE = SCHEDULE;
+// Deep-clone helper for draft next-week data
+function _cloneSched(src){const o={};for(const k in src){o[k]=src[k].map(s=>({...s,coaches:[...s.coaches]}));}return o;}
+const SCHEDULES = { 0: SCHEDULE, 1: _cloneSched(SCHEDULE) };
+function changeWeek(delta){
+  const next = Math.max(0, Math.min(1, weekOffset + delta));
+  if(next===weekOffset) return;
+  weekOffset = next;
+  WEEK_START = new Date(WEEK_START_BASE); WEEK_START.setDate(WEEK_START.getDate()+weekOffset*7);
+  WEEK_NUM = WEEK_NUM_BASE + weekOffset;
+  ACTIVE_SCHEDULE = SCHEDULES[weekOffset];
+  // Update UI chrome
+  const label=document.getElementById('wn-label');
+  if(label){
+    label.querySelector('.wn-main').innerHTML = weekOffset===0
+      ? 'This week'
+      : 'Next week <span class="wn-draft">Draft</span>';
+    label.querySelector('.wn-sub').textContent = `Session ${SESSION_NUM} · Week ${WEEK_NUM} · ${weekRangeText()}`;
+  }
+  document.getElementById('wn-prev').disabled = weekOffset<=0;
+  document.getElementById('wn-next').disabled = weekOffset>=1;
+  const banner=document.getElementById('next-week-banner');
+  if(banner) banner.style.display = weekOffset===1 ? 'flex' : 'none';
+  // Hide team notes on next week (they're week-specific)
+  const tn=document.getElementById('team-notes');
+  if(tn && weekOffset===1) tn.style.display='none';
+  // Rebuild
+  setHeaderWeek();
+  buildSchedTabs();
+  // After buildSchedTabs, default to first day of week on next-week, or today on this-week
+  const dayToShow = weekOffset===0 ? todayDayName() : 'Monday';
+  renderSchedule(dayToShow);
+  if(weekOffset===0 && typeof renderTeamNotes==='function') renderTeamNotes();
+  if(typeof buildAvailability==='function') buildAvailability();
+}
+function initWeekNav(){
+  const prev=document.getElementById('wn-prev'); if(prev) prev.disabled=true;
+  const sub=document.getElementById('wn-sub'); if(sub) sub.textContent=`Session ${SESSION_NUM} · Week ${WEEK_NUM} · ${weekRangeText()}`;
+}
 const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 function dateForDay(i){ const d=new Date(WEEK_START); d.setDate(d.getDate()+i); return d; }
 function weekRangeText(){
@@ -1351,7 +1417,7 @@ function getDayName(dateStr){
 function updateDayPanel(n,dateStr){
   const day=getDayName(dateStr);
   const cont=document.getElementById(`amp-${n}`);
-  if(!day||!SCHEDULE[day]){cont.innerHTML='<div class="no-avail">Date not in schedule</div>';return;}
+  if(!day||!ACTIVE_SCHEDULE[day]){cont.innerHTML='<div class="no-avail">Date not in schedule</div>';return;}
   const avail=getAvailable(day);
   if(!avail.length){cont.innerHTML='<div class="no-avail">All coaches scheduled this day</div>';return;}
   const pros=avail.filter(c=>c.type==='pro');
@@ -1425,7 +1491,7 @@ function onDateChange(n,dateStr){
   warn.style.display='none';
   const dayBlock=document.getElementById(`day-${n}`);
   dayBlock.dataset.date=dateStr;
-  if(!day||!SCHEDULE[day]){
+  if(!day||!ACTIVE_SCHEDULE[day]){
     picker.style.display='none';
     noMsg.textContent='No sessions scheduled on that date.';
     noMsg.style.display='block';
@@ -1433,7 +1499,7 @@ function onDateChange(n,dateStr){
   }
   const sel=picker.querySelector('select');
   sel.innerHTML='<option value="">+ Add a session needing coverage...</option>';
-  SCHEDULE[day].forEach((s,idx)=>{
+  ACTIVE_SCHEDULE[day].forEach((s,idx)=>{
     const opt=document.createElement('option');
     opt.value=idx;
     opt.textContent=`${s.time} · ${s.name}`;
@@ -1449,7 +1515,7 @@ function addSession(n,sessionIdx){
   const dateStr=dayBlock.dataset.date;
   const day=getDayName(dateStr);
   if(!day) return;
-  const session=SCHEDULE[day][parseInt(sessionIdx)];
+  const session=ACTIVE_SCHEDULE[day][parseInt(sessionIdx)];
   if(!session) return;
   const list=document.getElementById(`sessions-list-${n}`);
   const avail=getAvailable(day);
@@ -1688,7 +1754,7 @@ function showMine(){
   list.innerHTML='';
   let totalSessions=0;
   DAYS_ORDER.forEach(day=>{
-    const sessions=(SCHEDULE[day]||[]).filter(s=>s.coaches.some(c=>c===coach.abbr || c.startsWith(coach.abbr+' (')));
+    const sessions=(ACTIVE_SCHEDULE[day]||[]).filter(s=>s.coaches.some(c=>c===coach.abbr || c.startsWith(coach.abbr+' (')));
     if(!sessions.length) return;
     totalSessions+=sessions.length;
     const wrap=document.createElement('div');
@@ -1719,6 +1785,7 @@ refreshPushUI();
 wireNewsTabs();
 renderNews();
 renderTeamNotes();
+initWeekNav();
 buildSchedTabs();
 renderSchedule(todayDayName());
 buildAvailability();
