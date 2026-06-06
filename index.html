@@ -898,12 +898,17 @@ const _SUMMER_DAY = [
   {session:'afternoon', program:'LTC Elite — Group 1',       time:'12:30–3pm',   courts:'Courts 9-12 · at LEGACY',     type:'comp',  coaches:['Jeremie C','Gabe K','Flynn H','Joe H']},
   {session:'afternoon', program:'LTC Elite — Group 2',       time:'12:30–3pm',   courts:'Courts 13-16 · at LEGACY',    type:'comp',  coaches:['Andrew W','Kris W','Stevie D']},
 ];
+// Helper: clone the daily template, optionally removing specific coaches that day
+function _summerDay(removeNames){
+  const rm = removeNames || [];
+  return _SUMMER_DAY.map(s=>({...s, coaches:s.coaches.filter(c=>!rm.includes(c))}));
+}
 const SCHEDULE = {
-  Monday:    _SUMMER_DAY.map(s=>({...s, coaches:[...s.coaches]})),
-  Tuesday:   _SUMMER_DAY.map(s=>({...s, coaches:[...s.coaches]})),
-  Wednesday: _SUMMER_DAY.map(s=>({...s, coaches:[...s.coaches]})),
-  Thursday:  _SUMMER_DAY.map(s=>({...s, coaches:[...s.coaches]})),
-  Friday:    _SUMMER_DAY.map(s=>({...s, coaches:[...s.coaches]})),
+  Monday:    _summerDay(['Kein W']),
+  Tuesday:   _summerDay(['Kein W']),
+  Wednesday: _summerDay(),
+  Thursday:  _summerDay(),
+  Friday:    _summerDay(),
   Saturday:  [],
   Sunday:    [],
 };
