@@ -411,111 +411,41 @@ textarea{resize:vertical;min-height:64px;line-height:1.5}
 @media (max-width:640px){.news-title{font-size:20px}.news-item{padding:.85rem .95rem}}
 
 /* ============================================================
-   DARK THEME — modern look (overrides cascade over light base)
+   MODERN LIGHT POLISH — bright, clean, premium (keeps light bg)
    ============================================================ */
 :root{
-  --dk-bg:#0A0A0D;        /* page background */
-  --dk-surface:#141318;    /* cards */
-  --dk-surface-2:#1B1A21;  /* raised cards / inputs */
-  --dk-border:rgba(255,255,255,.09);
-  --dk-border-2:rgba(255,255,255,.14);
-  --dk-text:#F2F2F5;
-  --dk-text-dim:rgba(255,255,255,.62);
-  --dk-text-faint:rgba(255,255,255,.40);
-  --dk-violet:#8B5CF6;
+  --lp-bg:#F7F8FA;          /* soft off-white page */
+  --lp-surface:#FFFFFF;
+  --lp-border:#ECEDF1;
+  --lp-violet:#7C3AED;
+  --lp-shadow:0 1px 3px rgba(16,18,28,.05),0 1px 2px rgba(16,18,28,.04);
+  --lp-shadow-hover:0 8px 24px rgba(16,18,28,.10);
 }
-body{background:var(--dk-bg) !important;color:var(--dk-text) !important}
+body{background:var(--lp-bg) !important}
 
-/* Sidebar + header already dark — deepen them */
-.site-header{background:#0E0D11 !important;border-bottom:1px solid var(--dk-border) !important}
-.tabs{background:#0E0D11 !important;border-right:1px solid var(--dk-border) !important}
-.tab.active{background:rgba(139,92,246,.16) !important;color:#fff !important;box-shadow:inset 0 0 0 1px rgba(139,92,246,.4)}
-.tab:hover{background:rgba(255,255,255,.05) !important}
+/* Bigger, bolder clinic titles (the "modern" feel) */
+.t-name{font-family:'Bebas Neue',Inter,sans-serif !important;font-size:18px !important;letter-spacing:.8px !important;font-weight:400 !important;text-transform:uppercase;color:#16151A !important}
 
-/* Day tabs */
-.dtab{background:var(--dk-surface) !important;border-color:var(--dk-border) !important;color:var(--dk-text-dim) !important}
-.dtab:hover{border-color:var(--dk-border-2) !important;color:var(--dk-text) !important}
-.dtab.active{background:rgba(139,92,246,.18) !important;border-color:rgba(139,92,246,.55) !important;color:#fff !important;box-shadow:0 0 0 1px rgba(139,92,246,.3),0 4px 16px rgba(139,92,246,.18) !important}
-.dtab.future{background:rgba(224,134,58,.08) !important;border-color:rgba(224,134,58,.5) !important;color:#E0a45f !important}
-.dtab.future.active{background:rgba(224,134,58,.22) !important;color:#fff !important}
+/* Cards: clean white, soft shadow, rounded */
+.t-block{background:var(--lp-surface) !important;border:1px solid var(--lp-border) !important;border-left-width:4px !important;border-radius:12px !important;box-shadow:var(--lp-shadow) !important}
+.t-block:hover{box-shadow:var(--lp-shadow-hover) !important}
+.summer-card{background:var(--lp-surface) !important;border:1px solid var(--lp-border) !important;border-left-width:4px !important;border-radius:12px !important;box-shadow:var(--lp-shadow) !important}
+.summer-card:hover{box-shadow:var(--lp-shadow-hover) !important}
+.news-item{border-radius:12px !important;box-shadow:var(--lp-shadow) !important}
+.team-notes,.notif-prefs{border-radius:12px !important;box-shadow:var(--lp-shadow) !important}
 
-/* Week-nav (if present) */
-.wn-btn{background:var(--dk-surface) !important;border-color:var(--dk-border) !important;color:var(--dk-text-dim) !important}
-.wn-label .wn-main,.wn-label .wn-sub{color:var(--dk-text) !important}
-.wn-label .wn-sub{color:var(--dk-text-dim) !important}
+/* Day tabs: cleaner, soft shadow */
+.dtab{box-shadow:var(--lp-shadow) !important;border-radius:14px !important}
+.dtab.active{background:#16151A !important;border-color:#16151A !important;box-shadow:0 6px 18px rgba(16,18,28,.18) !important}
 
-/* Team notes banner */
-.team-notes{background:var(--dk-surface) !important;border:1px solid var(--dk-border) !important;border-left:3px solid var(--dk-violet) !important}
-.tn-title{color:#B69CF5 !important}
-.tn-list li{color:var(--dk-text-dim) !important}
-.tn-who{color:#fff !important}
-.tn-date{color:var(--dk-text-faint) !important}
-.tn-list li::before{color:var(--dk-violet) !important}
+/* Coach chips: crisper with subtle border */
+.chip{border:1px solid transparent;font-weight:600}
+.chip-pro{background:#EAF2FC !important;color:#0C447C !important;border-color:#CFE2F7 !important}
+.chip-pt{background:#FCF0DC !important;color:#7A4A0C !important;border-color:#F2DDB4 !important}
+.chip-jr{background:#E9F6DE !important;color:#256312 !important;border-color:#CFE9BD !important}
 
-/* Timeline (school-year) cards */
-.t-block{background:var(--dk-surface) !important;border:1px solid var(--dk-border) !important;border-left-width:4px !important;box-shadow:none !important}
-.t-block:hover{box-shadow:0 4px 20px rgba(0,0,0,.4) !important}
-.t-name{color:#fff !important;font-family:'Bebas Neue',Inter,sans-serif !important;font-size:18px !important;letter-spacing:1px !important;font-weight:400 !important;text-transform:uppercase}
-.t-time{color:var(--dk-text-faint) !important}
-.meta-pill{background:var(--dk-surface-2) !important;color:var(--dk-text-dim) !important;border:1px solid var(--dk-border)}
-.meta-pill.courts{background:rgba(55,138,221,.14) !important;color:#7FB6EE !important;border-color:rgba(55,138,221,.3)}
-.meta-pill.coach.perfect{background:rgba(63,182,100,.14) !important;color:#5FD389 !important;border-color:rgba(63,182,100,.3)}
-.meta-pill.coach.over{background:rgba(162,102,220,.16) !important;color:#BFA0E8 !important;border-color:rgba(162,102,220,.34)}
-.meta-pill.coach.short1{background:rgba(224,134,58,.16) !important;color:#E8A560 !important;border-color:rgba(224,134,58,.34)}
-.meta-pill.coach.short2{background:rgba(208,69,69,.16) !important;color:#E87A7A !important;border-color:rgba(208,69,69,.34)}
-
-/* Coach chips — dark pills with colored text + border */
-.chip{border:1px solid transparent}
-.chip-pro{background:rgba(55,138,221,.12) !important;color:#7FB6EE !important;border-color:rgba(55,138,221,.32) !important}
-.chip-pt{background:rgba(224,134,58,.12) !important;color:#E8A560 !important;border-color:rgba(224,134,58,.34) !important}
-.chip-jr{background:rgba(63,182,100,.12) !important;color:#5FD389 !important;border-color:rgba(63,182,100,.32) !important}
-
-/* Summer-camp cards */
-.summer-section-head{border-bottom:1.5px solid var(--dk-border) !important}
-.summer-section-head .ss-title{color:#fff !important}
-.summer-section-head .ss-time{color:var(--dk-text-dim) !important}
-.summer-card{background:var(--dk-surface) !important;border:1px solid var(--dk-border) !important;border-left-width:4px !important;box-shadow:none !important}
-.summer-card.munch{background:rgba(186,117,23,.08) !important;border-left-color:#D99022 !important}
-.summer-card.indoor{background:rgba(55,138,221,.07) !important;border-left-color:#378ADD !important}
-.summer-card.elite1{background:rgba(124,58,237,.09) !important;border-left-color:#9D6CF5 !important}
-.summer-card.elite2{background:rgba(14,159,110,.08) !important;border-left-color:#13C97E !important}
-.summer-card-title{color:#fff !important}
-.summer-card-courts{background:var(--dk-surface-2) !important;color:var(--dk-text-dim) !important}
-
-/* News tab */
-.news-title{color:#fff !important}
-.news-sub{color:var(--dk-text-dim) !important}
-.ntab{background:var(--dk-surface) !important;border-color:var(--dk-border) !important;color:var(--dk-text-dim) !important}
-.ntab:hover{border-color:var(--dk-border-2) !important;color:#fff !important}
-.ntab.active{background:#fff !important;border-color:#fff !important;color:#0A0A0D !important}
-.ntab-count{background:rgba(255,255,255,.12) !important;color:var(--dk-text-dim) !important}
-.ntab.active .ntab-count{background:rgba(10,10,13,.12) !important;color:#0A0A0D !important}
-.news-item{background:var(--dk-surface) !important;border:1px solid var(--dk-border) !important}
-.news-item-title{color:#fff !important}
-.news-item-body{color:var(--dk-text-dim) !important}
-.news-empty{background:var(--dk-surface) !important;border-color:var(--dk-border) !important;color:var(--dk-text-dim) !important}
-
-/* Push prefs card */
-.notif-prefs{background:var(--dk-surface) !important;border:1px solid var(--dk-border) !important;border-left:3px solid var(--dk-violet) !important}
-.np-title{color:#fff !important}
-.np-sub,.np-foot{color:var(--dk-text-dim) !important}
-.np-opt{color:var(--dk-text-dim) !important}
-.np-opt:hover{background:rgba(255,255,255,.04) !important}
-.np-opt-text b{color:#fff !important}
-#np-coach-picker{background:var(--dk-surface-2) !important;border-color:var(--dk-border) !important;color:#fff !important}
-
-/* Generic form inputs */
-input[type=text],input[type=email],input[type=date],select,textarea{background:var(--dk-surface-2) !important;border-color:var(--dk-border) !important;color:#fff !important}
-
-/* Mobile bottom tab bar */
-.tabbar{background:rgba(14,13,17,.92) !important;border-top:1px solid var(--dk-border) !important}
-.tabbar-item{color:var(--dk-text-faint) !important}
-.tabbar-item.active{color:#fff !important;background:rgba(139,92,246,.18) !important}
-
-/* Section/labels that were dark text */
-.sec-label,.fl{color:var(--dk-text-dim) !important}
-.panel h1,.panel h2,.panel h3{color:#fff !important}
-</style>
+/* Summer section headers: stronger */
+.summer-section-head .ss-title{color:#16151A !important}
 
 <!-- OneSignal Web Push — STAGING APP (separate from production, won't notify real coaches) -->
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
