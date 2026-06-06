@@ -213,8 +213,10 @@ body{padding-left:240px;padding-top:58px}
 .summer-card{background:#fff;border:1px solid var(--gray-200);border-left:4px solid var(--red);border-radius:10px;padding:14px 16px;margin-bottom:10px;box-shadow:0 1px 2px rgba(10,10,10,.04)}
 .summer-card:last-child{margin-bottom:0}
 .summer-card.munch{border-left-color:#BA7517;background:#FFFAF0}
+.summer-card.indoor{border-left-color:#378ADD;background:#F5FAFF}
+.summer-card.elite1{border-left-color:#7C3AED;background:#FAF6FF}
+.summer-card.elite2{border-left-color:#0E9F6E;background:#F3FBF7}
 .summer-card.elite{border-left-color:var(--red)}
-.summer-card.indoor{border-left-color:#378ADD}
 .summer-card-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px}
 .summer-card-title{font-size:14px;font-weight:700;color:var(--black);letter-spacing:.2px;display:flex;align-items:center;gap:8px}
 .summer-card-title .sc-ic{font-size:16px;line-height:1}
@@ -1090,11 +1092,15 @@ function renderSchedule(day){
 
 function _programClass(p){
   if(p.indexOf('Munchkins')>-1) return 'munch';
+  if(p.indexOf('Group 1')>-1) return 'elite1';
+  if(p.indexOf('Group 2')>-1) return 'elite2';
   if(p.indexOf('Elite')>-1) return 'elite';
   return 'indoor';
 }
 function _programIcon(p){
   if(p.indexOf('Munchkins')>-1) return '🧒';
+  if(p.indexOf('Group 1')>-1) return '🟣';
+  if(p.indexOf('Group 2')>-1) return '🟢';
   if(p.indexOf('Elite')>-1) return '🏆';
   return '🎾';
 }
