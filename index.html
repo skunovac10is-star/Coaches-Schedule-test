@@ -212,14 +212,21 @@ body{padding-left:240px;padding-top:58px}
 .summer-section-head .ss-time{font-size:11.5px;font-weight:600;color:var(--gray-500);letter-spacing:.4px;text-transform:uppercase}
 .summer-card{background:#fff;border:1px solid var(--gray-200);border-left:4px solid var(--red);border-radius:10px;padding:14px 16px;margin-bottom:10px;box-shadow:0 1px 2px rgba(10,10,10,.04)}
 .summer-card:last-child{margin-bottom:0}
-.summer-card.munch{border-left-color:#BA7517;background:#FFFAF0}
-.summer-card.indoor{border-left-color:#378ADD;background:#F5FAFF}
-.summer-card.elite1{border-left-color:#7C3AED;background:#FAF6FF}
-.summer-card.elite2{border-left-color:#0E9F6E;background:#F3FBF7}
+.summer-card.munch{border-left-color:#DC2626;background:#FEF4F3}
+.summer-card.indoor{border-left-color:#EA8C2B;background:#FFF8F0}
+.summer-card.elite1{border-left-color:#2563EB;background:#F3F7FE}
+.summer-card.elite2{border-left-color:#E0B53A;background:#FFFBEC}
 .summer-card.elite{border-left-color:var(--red)}
 .summer-card-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px}
 .summer-card-title{font-size:14px;font-weight:700;color:var(--black);letter-spacing:.2px;display:flex;align-items:center;gap:8px}
-.summer-card-title .sc-ic{font-size:16px;line-height:1}
+.summer-card-title .sc-ic{font-size:16px;line-height:1;display:inline-flex;align-items:center}
+/* Colored tennis balls per clinic */
+.cball{display:inline-block;width:15px;height:15px;border-radius:50%;flex-shrink:0;position:relative;box-shadow:inset -2px -2px 3px rgba(0,0,0,.18)}
+.cball::after{content:"";position:absolute;inset:0;border-radius:50%;border-top:1.3px solid rgba(255,255,255,.55);clip-path:inset(0 0 50% 0);transform:rotate(35deg)}
+.cball-red{background:#DC2626}
+.cball-orange{background:#EA8C2B}
+.cball-blue{background:#2563EB}
+.cball-yellow{background:#E0B53A}
 .summer-card-courts{font-size:11.5px;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:.5px;background:var(--gray-100);padding:3px 9px;border-radius:8px}
 .summer-card-chips{display:flex;flex-wrap:wrap;gap:5px}
 .summer-section-meta{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--gray-500);font-weight:500}
@@ -429,8 +436,13 @@ body{background:var(--lp-bg) !important}
 /* Cards: clean white, soft shadow, rounded */
 .t-block{background:var(--lp-surface) !important;border:1px solid var(--lp-border) !important;border-left-width:4px !important;border-radius:12px !important;box-shadow:var(--lp-shadow) !important}
 .t-block:hover{box-shadow:var(--lp-shadow-hover) !important}
-.summer-card{background:var(--lp-surface) !important;border:1px solid var(--lp-border) !important;border-left-width:4px !important;border-radius:12px !important;box-shadow:var(--lp-shadow) !important}
+.summer-card{border-top:1px solid var(--lp-border) !important;border-right:1px solid var(--lp-border) !important;border-bottom:1px solid var(--lp-border) !important;border-left-width:4px !important;border-radius:12px !important;box-shadow:var(--lp-shadow) !important}
 .summer-card:hover{box-shadow:var(--lp-shadow-hover) !important}
+/* keep clinic-colored left borders + tints (override after light-polish) */
+.summer-card.munch{border-left-color:#DC2626 !important;background:#FEF4F3 !important}
+.summer-card.indoor{border-left-color:#EA8C2B !important;background:#FFF8F0 !important}
+.summer-card.elite1{border-left-color:#2563EB !important;background:#F3F7FE !important}
+.summer-card.elite2{border-left-color:#E0B53A !important;background:#FFFBEC !important}
 .news-item{border-radius:12px !important;box-shadow:var(--lp-shadow) !important}
 .team-notes,.notif-prefs{border-radius:12px !important;box-shadow:var(--lp-shadow) !important}
 
@@ -1138,11 +1150,11 @@ function _programClass(p){
   return 'indoor';
 }
 function _programIcon(p){
-  if(p.indexOf('Munchkins')>-1) return '🧒';
-  if(p.indexOf('Group 1')>-1) return '🟣';
-  if(p.indexOf('Group 2')>-1) return '🟢';
-  if(p.indexOf('Elite')>-1) return '🏆';
-  return '🎾';
+  if(p.indexOf('Munchkins')>-1) return '<span class="cball cball-red"></span>';
+  if(p.indexOf('Group 1')>-1) return '<span class="cball cball-blue"></span>';
+  if(p.indexOf('Group 2')>-1) return '<span class="cball cball-yellow"></span>';
+  if(p.indexOf('Elite')>-1) return '<span class="cball cball-blue"></span>';
+  return '<span class="cball cball-orange"></span>'; // LTC Indoor
 }
 function renderSummerCard(s){
   const chips = s.coaches.map(c=>`<span class="chip ${chipCls(c)}">${c}</span>`).join('');
