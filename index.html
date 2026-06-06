@@ -792,62 +792,37 @@ const ALL_COACHES = [
   {id:'dean',name:'Dean Smith',abbr:'Dean S',phone:'215-688-8141',email:'deansmith@yahoo.com',type:'jr',level:'L2 — Munchkins, CC, Adults'},
   {id:'amy',name:'Amy Georgescu',abbr:'Amy G',phone:'484-999-1779',email:'',type:'jr',level:'L2 — Munchkins, CC, Adults'},
   {id:'sean',name:'Sean T',abbr:'Sean T',phone:'610-659-3715',email:'',type:'pt',level:'Any clinic'},
+  {id:'flynn',name:'Flynn Hollinger',abbr:'Flynn H',phone:'610-717-8850',email:'',type:'jr',level:'L3 — full coverage incl. TT1'},
+  // Summer camp staff (June–August)
+  {id:'monet',name:'Monet W',abbr:'Monet W',phone:'',email:'',type:'jr',level:'Summer camp'},
+  {id:'kamryn',name:'Kamryn B',abbr:'Kamryn B',phone:'',email:'',type:'jr',level:'Summer camp'},
+  {id:'brady',name:'Brady C',abbr:'Brady C',phone:'',email:'',type:'jr',level:'Summer camp'},
+  {id:'mia',name:'Mia S',abbr:'Mia S',phone:'',email:'',type:'jr',level:'Summer camp'},
+  {id:'szuzsi',name:'Szuzsi',abbr:'Szuzsi',phone:'',email:'',type:'jr',level:'Summer camp — Munchkins'},
+  {id:'talia',name:'Talia',abbr:'Talia',phone:'',email:'',type:'jr',level:'Summer camp — Munchkins'},
 ];
 
+// ===== SUMMER CAMP SCHEDULE — Week 1 (Jun 9–13) =====
+// 3 parallel programs each weekday morning + afternoon
+// (Mon-only roster from the source xlsx replicated across all 5 weekdays —
+//  tell Sanjin which days deviate so we can adjust per day)
+const _SUMMER_DAY = [
+  {time:'9am–3pm',  name:'Munchkins (all day)',         type:'munch', courts:2, coaches:['Szuzsi','Talia']},
+  {time:'9–11:30am',name:'LTC Indoor — Courts 1-4',     type:'comp',  courts:4, coaches:['Kein W','Kamryn B','Brady C','Mia S']},
+  {time:'9–11:30am',name:'LTC Indoor — Courts 5-8',     type:'comp',  courts:4, coaches:['Laurence P','Sean T','Nick F']},
+  {time:'9–11:30am',name:'LTC — Courts 9-12',           type:'comp',  courts:4, coaches:['Jeremie C','Gabe K','Flynn H','Monet W']},
+  {time:'9–11:30am',name:'LTC Elite — Courts 13-16',    type:'comp',  courts:4, coaches:['Andrew W','Kris W','Shevi A','Stevie D']},
+  {time:'12:30–3pm',name:'LTC Indoor (all 8 courts)',   type:'comp',  courts:8, coaches:['Kein W','Kamryn B','Brady C','Mia S','Laurence P','Sean T','Nick F']},
+  {time:'12:30–3pm',name:'LTC + LTC Elite',             type:'comp',  courts:8, coaches:['Jeremie C','Gabe K','Flynn H','Monet W','Andrew W','Kris W','Shevi A','Stevie D']},
+];
 const SCHEDULE = {
-  Monday:[
-    {time:'9:30–11am',name:'Adult 2.5-3.0',type:'adult',coaches:['Laurence P','Shevi A']},
-    {time:'12–1pm',name:'Adult Beginner',type:'adult',courts:1,coaches:['David S']},
-    {time:'4–5:30pm',name:'TT Orange 2 Green',type:'tt',courts:1,coaches:['Nick F']},
-    {time:'4–6pm',name:'TT Comp',type:'comp',courts:7,coaches:['Kris W','Andrew W','Gabe K','Stevie D','Aleix C','Jeremie C','Kein W']},
-    {time:'7–8:30pm',name:'Comp Clinic',type:'comp',courts:6,coaches:['Stevie D','Kein W','Shevi A','Kris W','Bella N','Gabe K']},
-    {time:'7–8:30pm',name:'Green 2 Orange',type:'tt',courts:2,coaches:['Jeremie C','Aleix C','Nick F']},
-    {time:'8:30–10pm',name:'Adult 2.5-3.0',type:'adult',coaches:['Shevi A','Gabe K']},
-    {time:'8:30–10pm',name:'Adult Adv Beginner',type:'adult',courts:1,coaches:['Laurence P']},
-  ],
-  Tuesday:[
-    {time:'9:30–11am',name:'Adult 2.5-3.0',type:'adult',courts:1,coaches:['Laurence P']},
-    {time:'5–7pm',name:'TT1',type:'tt',courts:8,coaches:['Andrew W','Anna M','Aleix C','Kris W','Jeremie C','Stevie D']},
-    {time:'7–8:30pm',name:'Comp Clinic',type:'comp',courts:6,coaches:['Kein W','Stevie D','Kris W','Anna M','Laurence P','Bella N']},
-    {time:'7–8:30pm',name:'TT Orange 2 Green',type:'tt',courts:2,coaches:['Nick F','Jeremie C','Aleix C']},
-    {time:'8:30–10pm',name:'Adult 3.5+',type:'adult',courts:1,coaches:['Anna M','Kris W']},
-  ],
-  Wednesday:[
-    {time:'12–1:30pm',name:'Adult Adv Beginner',type:'adult',coaches:['Laurence P','David S']},
-    {time:'4–6pm',name:'TT Comp',type:'comp',coaches:['Andrew W','Ahmed A','Stevie D','Jeremie C','Nick F','Laurence P','Aleix C','Gabe K']},
-    {time:'6–7pm',name:'Munchkins',type:'munch',courts:2,coaches:['Laurence P','Anna M','Nick F','David S','Ahmed A','Amy G','Shevi A','Bella N']},
-    {time:'7–9pm',name:'TT1',type:'tt',courts:8,coaches:['Andrew W','Gabe K','Stevie D','Shevi A','Nick F','Jeremie C','Anna M','Ahmed A']},
-  ],
-  Thursday:[
-    {time:'4–5pm',name:'Munchkins',type:'munch',courts:2,coaches:['Laurence P','Kein W','Nathan D','David S']},
-    {time:'5–7pm',name:'TT1',type:'tt',courts:8,coaches:['Andrew W','Jeremie C','Gabe K','Kris W','Aleix C','Anna M (2/3)']},
-    {time:'7–8:30pm',name:'Comp Clinic',type:'comp',courts:6,coaches:['Kein W','Laurence P','Anna M','Max O','Shevi A','Kris W','Jeremie C']},
-    {time:'7–8:30pm',name:'Green 2 Orange',type:'tt',courts:2,coaches:['Andrew W','Aleix C']},
-    {time:'8:30–10pm',name:'Adult 3.5+',type:'adult',coaches:['Kein W','Laurence P']},
-  ],
-  Friday:[
-    {time:'4–5:30pm',name:'Comp Clinic',type:'comp',courts:6,coaches:['Aleix C','Stevie D','Nathan D','Kein W','Sean T','Kris W']},
-    {time:'4–5:30pm',name:'TT Orange 2 Green',type:'tt',courts:2,coaches:['Nick F','Andrew W']},
-    {time:'5:30–6:30pm',name:'Munchkins',type:'munch',courts:2,coaches:['Laurence P','Kein W','Nick F','Sean T','Nathan D']},
-    {time:'6:30–8:30pm',name:'TT Comp',type:'comp',coaches:['Stevie D','Andrew W','Nathan D','Nick F','Aleix C','Kein W','Sean T','Max O 7–8:30']},
-  ],
-  Saturday:[
-    {time:'8:30–10am',name:'Adult 2.5-3.0',type:'adult',courts:1,coaches:['Ahmed A']},
-    {time:'10–11am',name:'Munchkins',type:'munch',courts:2,coaches:['Sean T','Ahmed A','Kein W','Nick F','Anna M']},
-    {time:'11am–12:30pm',name:'Comp Clinic',type:'comp',coaches:['Kein W','Kris W','Shevi A','Stevie D','Ahmed A','Anna M','Sean T','Nick F']},
-    {time:'1:30–3:30pm',name:'TT Comp',type:'comp',coaches:['Shevi A','Kris W','Sean T','Stevie D','Kein W','Ahmed A','Gabe K']},
-  ],
-  Sunday:[
-    {time:'7:30–9am',name:'Team United Clinic',type:'other',coaches:['Shevi A']},
-    {time:'8:30–10am',name:'Adult 3.5+',type:'adult',coaches:['Laurence P','Shevi A (9–10am only)']},
-    {time:'11am–12pm',name:'Munchkins',type:'munch',courts:2,coaches:['Gabe K','Kein W','Anna M','Nick F','Laurence P','Shevi A','Jinay S','Sean T','Levi S']},
-    {time:'12–1:30pm',name:'Comp Clinic',type:'comp',coaches:['Kein W','Shevi A','Nick F','Stevie D','Jinay S','Anna M','Sean T','Jeremie C','Levi S']},
-    {time:'2:30–4pm',name:'TT Green 2 Y',type:'tt',courts:1,coaches:['Nick F','Sean T']},
-    {time:'2:30–4:30pm',name:'TT1',type:'tt',courts:7,coaches:['Jeremie C','Shevi A','Stevie D','Gabe K','Aleix C']},
-    {time:'5:30–7pm',name:'Adult 2.5-3.0',type:'adult',coaches:['Laurence P','Jinay S']},
-    {time:'5:30–7pm',name:'Adult Beginner',type:'adult',courts:1,coaches:['Kein W']},
-    {time:'5:30–7pm',name:'Adult Adv Beginner',type:'adult',courts:1,coaches:['Gabe K']},
-  ]
+  Monday:    _SUMMER_DAY.map(s=>({...s, coaches:[...s.coaches]})),
+  Tuesday:   _SUMMER_DAY.map(s=>({...s, coaches:[...s.coaches]})),
+  Wednesday: _SUMMER_DAY.map(s=>({...s, coaches:[...s.coaches]})),
+  Thursday:  _SUMMER_DAY.map(s=>({...s, coaches:[...s.coaches]})),
+  Friday:    _SUMMER_DAY.map(s=>({...s, coaches:[...s.coaches]})),
+  Saturday:  [],
+  Sunday:    [],
 };
 
 // ---- PUSH NOTIFICATION PREFS ----
@@ -1217,10 +1192,10 @@ function renderTeamNotes(){
   list.innerHTML=active.map(n=>`<li><span class="tn-who">${n.who}</span> <span class="tn-date">${fmtNoteRange(n.start,n.end)}</span> ${n.what}</li>`).join('');
 }
 
-// Auto-shifting week — anchored to Session 3 Week 9 (May 11, 2026 = Mon)
+// Summer Camp — Week 1 starts June 9, 2026 (Mon)
 // WEEK_START_BASE recomputes each load, so on Sun→Mon rollover the app auto-advances.
-const _WEEK_ANCHOR_DATE = new Date(2026, 4, 11);
-const _WEEK_ANCHOR_NUM = 9;
+const _WEEK_ANCHOR_DATE = new Date(2026, 5, 9); // Jun 9, 2026 = Summer Camp Week 1
+const _WEEK_ANCHOR_NUM = 1;
 function _thisMonday(){
   const d=new Date(); d.setHours(0,0,0,0);
   const dow=d.getDay();              // Sun=0..Sat=6
@@ -1229,7 +1204,7 @@ function _thisMonday(){
   return d;
 }
 const WEEK_START_BASE = _thisMonday();
-const SESSION_NUM = 3;
+const SESSION_NUM = 'Summer Camp';
 const WEEK_NUM_BASE = _WEEK_ANCHOR_NUM + Math.round((WEEK_START_BASE - _WEEK_ANCHOR_DATE)/(7*24*3600*1000));
 let weekOffset = 0;
 let WEEK_START = new Date(WEEK_START_BASE);
