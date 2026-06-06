@@ -215,7 +215,7 @@ body{padding-left:240px;padding-top:58px}
 .summer-card.munch{border-left-color:#DC2626;background:#FEF4F3}
 .summer-card.indoor{border-left-color:#EA8C2B;background:#FFF8F0}
 .summer-card.elite1{border-left-color:#2563EB;background:#F3F7FE}
-.summer-card.elite2{border-left-color:#E0B53A;background:#FFFBEC}
+.summer-card.elite2{border-left-color:#16A34A;background:#F1FBF4}
 .summer-card.elite{border-left-color:var(--red)}
 .summer-card-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px}
 .summer-card-title{font-size:14px;font-weight:700;color:var(--black);letter-spacing:.2px;display:flex;align-items:center;gap:8px}
@@ -226,7 +226,7 @@ body{padding-left:240px;padding-top:58px}
 .cball-red{background:#DC2626}
 .cball-orange{background:#EA8C2B}
 .cball-blue{background:#2563EB}
-.cball-yellow{background:#E0B53A}
+.cball-green{background:#16A34A}
 .summer-card-courts{font-size:11.5px;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:.5px;background:var(--gray-100);padding:3px 9px;border-radius:8px}
 .summer-card-chips{display:flex;flex-wrap:wrap;gap:5px}
 .summer-section-meta{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--gray-500);font-weight:500}
@@ -442,7 +442,7 @@ body{background:var(--lp-bg) !important}
 .summer-card.munch{border-left-color:#DC2626 !important;background:#FEF4F3 !important}
 .summer-card.indoor{border-left-color:#EA8C2B !important;background:#FFF8F0 !important}
 .summer-card.elite1{border-left-color:#2563EB !important;background:#F3F7FE !important}
-.summer-card.elite2{border-left-color:#E0B53A !important;background:#FFFBEC !important}
+.summer-card.elite2{border-left-color:#16A34A !important;background:#F1FBF4 !important}
 .news-item{border-radius:12px !important;box-shadow:var(--lp-shadow) !important}
 .team-notes,.notif-prefs{border-radius:12px !important;box-shadow:var(--lp-shadow) !important}
 
@@ -1152,7 +1152,7 @@ function _programClass(p){
 function _programIcon(p){
   if(p.indexOf('Munchkins')>-1) return '<span class="cball cball-red"></span>';
   if(p.indexOf('Group 1')>-1) return '<span class="cball cball-blue"></span>';
-  if(p.indexOf('Group 2')>-1) return '<span class="cball cball-yellow"></span>';
+  if(p.indexOf('Group 2')>-1) return '<span class="cball cball-green"></span>';
   if(p.indexOf('Elite')>-1) return '<span class="cball cball-blue"></span>';
   return '<span class="cball cball-orange"></span>'; // LTC Indoor
 }
