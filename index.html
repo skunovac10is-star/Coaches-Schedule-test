@@ -202,6 +202,31 @@ body{padding-left:240px;padding-top:58px}
 .leg-bar{width:3px;height:16px;border-radius:2px}
 
 .timeline{display:flex;flex-direction:column;gap:6px}
+
+/* ===== Summer Camp layout — Morning/Afternoon sections with program cards ===== */
+.summer-section{margin-bottom:1.5rem}
+.summer-section:last-child{margin-bottom:0}
+.summer-section-head{display:flex;align-items:baseline;gap:10px;margin:1rem 0 .65rem;padding-bottom:.45rem;border-bottom:1.5px solid var(--gray-200)}
+.summer-section-head .ss-ic{font-size:18px;line-height:1}
+.summer-section-head .ss-title{font-family:'Bebas Neue',Inter,sans-serif;font-size:18px;letter-spacing:1.2px;color:var(--black);font-weight:400}
+.summer-section-head .ss-time{font-size:11.5px;font-weight:600;color:var(--gray-500);letter-spacing:.4px;text-transform:uppercase}
+.summer-card{background:#fff;border:1px solid var(--gray-200);border-left:4px solid var(--red);border-radius:10px;padding:14px 16px;margin-bottom:10px;box-shadow:0 1px 2px rgba(10,10,10,.04)}
+.summer-card:last-child{margin-bottom:0}
+.summer-card.munch{border-left-color:#BA7517;background:#FFFAF0}
+.summer-card.elite{border-left-color:var(--red)}
+.summer-card.indoor{border-left-color:#378ADD}
+.summer-card-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.summer-card-title{font-size:14px;font-weight:700;color:var(--black);letter-spacing:.2px;display:flex;align-items:center;gap:8px}
+.summer-card-title .sc-ic{font-size:16px;line-height:1}
+.summer-card-courts{font-size:11.5px;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:.5px;background:var(--gray-100);padding:3px 9px;border-radius:8px}
+.summer-card-chips{display:flex;flex-wrap:wrap;gap:5px}
+.summer-section-meta{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--gray-500);font-weight:500}
+.summer-section-meta .sm-pill{display:inline-flex;align-items:center;gap:4px;background:var(--gray-100);color:var(--gray-700);padding:2px 8px;border-radius:8px;font-weight:600;font-size:10.5px;letter-spacing:.3px}
+@media (max-width:640px){
+  .summer-section-head{flex-wrap:wrap}
+  .summer-card-head{align-items:flex-start}
+  .summer-card{padding:12px 13px}
+}
 .t-row{display:grid;grid-template-columns:78px 1fr;gap:10px;align-items:stretch}
 .t-time{font-size:11px;color:var(--gray-500);font-weight:500;text-align:right;padding-top:10px;line-height:1.3;padding-right:2px}
 .t-block{background:#fff;border:1px solid var(--gray-200);border-radius:0 var(--rlg) var(--rlg) 0;padding:14px 16px;display:flex;align-items:center;gap:10px;border-left-width:4px;box-shadow:0 1px 2px rgba(10,10,10,.04);transition:transform .12s, box-shadow .12s}
@@ -803,17 +828,21 @@ const ALL_COACHES = [
 ];
 
 // ===== SUMMER CAMP SCHEDULE — Week 1 (Jun 9–13) =====
-// 3 parallel programs each weekday morning + afternoon
-// (Mon-only roster from the source xlsx replicated across all 5 weekdays —
-//  tell Sanjin which days deviate so we can adjust per day)
+// Three parallel programs daily — grouped by program in Morning/Afternoon sections.
+// Render path: if a clinic has `session`, the summer-style cards render instead of timeline.
 const _SUMMER_DAY = [
-  {time:'9am–3pm',  name:'Munchkins (all day)',         type:'munch', courts:2, coaches:['Szuzsi','Talia']},
-  {time:'9–11:30am',name:'LTC Indoor — Courts 1-4',     type:'comp',  courts:4, coaches:['Kein W','Kamryn B','Brady C','Mia S']},
-  {time:'9–11:30am',name:'LTC Indoor — Courts 5-8',     type:'comp',  courts:4, coaches:['Laurence P','Sean T','Nick F']},
-  {time:'9–11:30am',name:'LTC — Courts 9-12',           type:'comp',  courts:4, coaches:['Jeremie C','Gabe K','Flynn H','Monet W']},
-  {time:'9–11:30am',name:'LTC Elite — Courts 13-16',    type:'comp',  courts:4, coaches:['Andrew W','Kris W','Shevi A','Stevie D']},
-  {time:'12:30–3pm',name:'LTC Indoor (all 8 courts)',   type:'comp',  courts:8, coaches:['Kein W','Kamryn B','Brady C','Mia S','Laurence P','Sean T','Nick F']},
-  {time:'12:30–3pm',name:'LTC + LTC Elite',             type:'comp',  courts:8, coaches:['Jeremie C','Gabe K','Flynn H','Monet W','Andrew W','Kris W','Shevi A','Stevie D']},
+  // All-day program
+  {session:'allday',    program:'Munchkins',   time:'9am–3pm',     courts:'2 courts', type:'munch', coaches:['Szuzsi','Talia']},
+
+  // MORNING — 9:00–11:30am
+  {session:'morning',   program:'LTC Indoor',  time:'9–11:30am',   courts:'Courts 1-4',                 type:'comp',  coaches:['Kein W','Kamryn B','Brady C','Mia S']},
+  {session:'morning',   program:'LTC Indoor',  time:'9–11:30am',   courts:'Courts 5-8',                 type:'comp',  coaches:['Laurence P','Sean T','Nick F']},
+  {session:'morning',   program:'LTC + Elite', time:'9–11:30am',   courts:'Courts 9-12 (LTC)',          type:'comp',  coaches:['Jeremie C','Gabe K','Flynn H','Monet W']},
+  {session:'morning',   program:'LTC + Elite', time:'9–11:30am',   courts:'Courts 13-16 (LTC Elite)',   type:'comp',  coaches:['Andrew W','Kris W','Shevi A','Stevie D']},
+
+  // AFTERNOON — 12:30–3:00pm
+  {session:'afternoon', program:'LTC Indoor',  time:'12:30–3pm',   courts:'All 8 indoor courts',        type:'comp',  coaches:['Kein W','Kamryn B','Brady C','Mia S','Laurence P','Sean T','Nick F']},
+  {session:'afternoon', program:'LTC + Elite', time:'12:30–3pm',   courts:'Courts 9-16 (combined)',     type:'comp',  coaches:['Jeremie C','Gabe K','Flynn H','Monet W','Andrew W','Kris W','Shevi A','Stevie D']},
 ];
 const SCHEDULE = {
   Monday:    _SUMMER_DAY.map(s=>({...s, coaches:[...s.coaches]})),
@@ -1045,13 +1074,58 @@ function metaHtml(s){
 function renderSchedule(day){
   const tl = document.getElementById('timeline');
   tl.innerHTML='';
-  (ACTIVE_SCHEDULE[day]||[]).forEach(s=>{
+  const slots = ACTIVE_SCHEDULE[day]||[];
+  // If any slot has a `session` field → render summer-camp card layout
+  const isSummer = slots.some(s=>s.session);
+  if(isSummer){ renderSummerDay(tl, slots); return; }
+  // Default school-year timeline layout
+  slots.forEach(s=>{
     const row=document.createElement('div');
     row.className='t-row';
     const chips=s.coaches.map(c=>`<span class="chip ${chipCls(c)}">${c}</span>`).join('');
     row.innerHTML=`<div class="t-time">${s.time}</div><div class="t-block ${s.type}"><div class="t-name">${s.name}</div>${metaHtml(s)}<div class="t-chips">${chips}</div></div>`;
     tl.appendChild(row);
   });
+}
+
+function _programClass(p){
+  if(p==='Munchkins') return 'munch';
+  if(p==='LTC + Elite') return 'elite';
+  return 'indoor';
+}
+function _programIcon(p){
+  if(p==='Munchkins') return '🧒';
+  if(p==='LTC + Elite') return '🏆';
+  return '🎾';
+}
+function renderSummerCard(s){
+  const chips = s.coaches.map(c=>`<span class="chip ${chipCls(c)}">${c}</span>`).join('');
+  return `<div class="summer-card ${_programClass(s.program)}">
+    <div class="summer-card-head">
+      <div class="summer-card-title"><span class="sc-ic">${_programIcon(s.program)}</span>${s.program}</div>
+      <div class="summer-card-courts">${s.courts}</div>
+    </div>
+    <div class="summer-card-chips">${chips}</div>
+  </div>`;
+}
+function renderSummerSection(tl, label, icon, timeRange, items){
+  if(!items.length) return;
+  const sec = document.createElement('div');
+  sec.className='summer-section';
+  sec.innerHTML = `<div class="summer-section-head">
+    <span class="ss-ic">${icon}</span>
+    <span class="ss-title">${label}</span>
+    <span class="ss-time">${timeRange}</span>
+  </div>` + items.map(renderSummerCard).join('');
+  tl.appendChild(sec);
+}
+function renderSummerDay(tl, slots){
+  const allday    = slots.filter(s=>s.session==='allday');
+  const morning   = slots.filter(s=>s.session==='morning');
+  const afternoon = slots.filter(s=>s.session==='afternoon');
+  renderSummerSection(tl, 'All Day',   '🌞', '9:00am – 3:00pm',   allday);
+  renderSummerSection(tl, 'Morning',   '🌅', '9:00am – 11:30am',  morning);
+  renderSummerSection(tl, 'Afternoon', '🌇', '12:30pm – 3:00pm',  afternoon);
 }
 
 // ---- WHAT'S NEW ---- (edit this list to add announcements)
