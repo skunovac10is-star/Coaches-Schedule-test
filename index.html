@@ -227,6 +227,9 @@ body{padding-left:240px;padding-top:58px}
 .cball-orange{background:#EA8C2B}
 .cball-blue{background:#2563EB}
 .cball-green{background:#16A34A}
+.cball-purple{background:#7C3AED}
+.summer-card.adult{border-left-color:#7C3AED;background:#F7F3FE}
+.sc-unstaffed{font-size:11.5px;font-weight:600;color:#9333EA;background:#F3E8FF;border:1px dashed #C9A6F0;padding:3px 9px;border-radius:8px}
 .summer-card-courts{font-size:11.5px;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:.5px;background:var(--gray-100);padding:3px 9px;border-radius:8px}
 .summer-card-chips{display:flex;flex-wrap:wrap;gap:5px}
 .summer-section-meta{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--gray-500);font-weight:500}
@@ -443,6 +446,7 @@ body{background:var(--lp-bg) !important}
 .summer-card.indoor{border-left-color:#EA8C2B !important;background:#FFF8F0 !important}
 .summer-card.elite1{border-left-color:#2563EB !important;background:#F3F7FE !important}
 .summer-card.elite2{border-left-color:#16A34A !important;background:#F1FBF4 !important}
+.summer-card.adult{border-left-color:#7C3AED !important;background:#F7F3FE !important}
 .news-item{border-radius:12px !important;box-shadow:var(--lp-shadow) !important}
 .team-notes,.notif-prefs{border-radius:12px !important;box-shadow:var(--lp-shadow) !important}
 
@@ -903,14 +907,39 @@ function _summerDay(removeNames){
   const rm = removeNames || [];
   return _SUMMER_DAY.map(s=>({...s, coaches:s.coaches.filter(c=>!rm.includes(c))}));
 }
+// ===== ADULT CLINICS (purple) — coaches TBD, Sanjin to staff =====
+const _ADULT = {
+  Monday:[
+    {session:'adult', program:'Adv Beginner', courts:'11:30am–12:30pm', type:'adult', coaches:[]},
+    {session:'adult', program:'3.5+',         courts:'6:30–8:00pm',     type:'adult', coaches:[]},
+  ],
+  Tuesday:[
+    {session:'adult', program:'2.5–3.0',      courts:'6:30–8:00pm',     type:'adult', coaches:[]},
+  ],
+  Wednesday:[
+    {session:'adult', program:'Beginner',     courts:'11:30am–12:30pm', type:'adult', coaches:[]},
+    {session:'adult', program:'Adv Beginner', courts:'6:30–8:00pm',     type:'adult', coaches:[]},
+  ],
+  Thursday:[
+    {session:'adult', program:'3.5+',         courts:'6:30–8:00pm',     type:'adult', coaches:[]},
+  ],
+  Friday:[],
+  Saturday:[],
+  Sunday:[
+    {session:'adult', program:'2.5–3.0',      courts:'9:30–11:00am',    type:'adult', coaches:[]},
+    {session:'adult', program:'3.5+',         courts:'9:30–11:00am',    type:'adult', coaches:[]},
+    {session:'adult', program:'Beginner',     courts:'11:00am–12:30pm', type:'adult', coaches:[]},
+    {session:'adult', program:'Adv Beginner', courts:'11:00am–12:30pm', type:'adult', coaches:[]},
+  ],
+};
 const SCHEDULE = {
-  Monday:    _summerDay(['Kein W','Mia S']),
-  Tuesday:   _summerDay(['Kein W']),
-  Wednesday: _summerDay(),
-  Thursday:  _summerDay(),
-  Friday:    _summerDay(),
+  Monday:    [..._summerDay(['Kein W','Mia S']), ..._ADULT.Monday],
+  Tuesday:   [..._summerDay(['Kein W']),         ..._ADULT.Tuesday],
+  Wednesday: [..._summerDay(),                   ..._ADULT.Wednesday],
+  Thursday:  [..._summerDay(),                   ..._ADULT.Thursday],
+  Friday:    [..._summerDay(),                   ..._ADULT.Friday],
   Saturday:  [],
-  Sunday:    [],
+  Sunday:    [..._ADULT.Sunday],
 };
 
 // ---- PUSH NOTIFICATION PREFS ----
@@ -1162,10 +1191,15 @@ function _programIcon(p){
   return '<span class="cball cball-orange"></span>'; // LTC Indoor
 }
 function renderSummerCard(s){
-  const chips = s.coaches.map(c=>`<span class="chip ${chipCls(c)}">${c}</span>`).join('');
-  return `<div class="summer-card ${_programClass(s.program)}">
+  const isAdult = s.session==='adult';
+  const cls = isAdult ? 'adult' : _programClass(s.program);
+  const icon = isAdult ? '<span class="cball cball-purple"></span>' : _programIcon(s.program);
+  const chips = s.coaches.length
+    ? s.coaches.map(c=>`<span class="chip ${chipCls(c)}">${c}</span>`).join('')
+    : '<span class="sc-unstaffed">Needs staffing</span>';
+  return `<div class="summer-card ${cls}">
     <div class="summer-card-head">
-      <div class="summer-card-title"><span class="sc-ic">${_programIcon(s.program)}</span>${s.program}</div>
+      <div class="summer-card-title"><span class="sc-ic">${icon}</span>${s.program}</div>
       <div class="summer-card-courts">${s.courts}</div>
     </div>
     <div class="summer-card-chips">${chips}</div>
@@ -1186,9 +1220,11 @@ function renderSummerDay(tl, slots){
   const allday    = slots.filter(s=>s.session==='allday');
   const morning   = slots.filter(s=>s.session==='morning');
   const afternoon = slots.filter(s=>s.session==='afternoon');
-  renderSummerSection(tl, 'All Day',   '🌞', '9:00am – 3:00pm',   allday);
-  renderSummerSection(tl, 'Morning',   '🌅', '9:00am – 11:30am',  morning);
-  renderSummerSection(tl, 'Afternoon', '🌇', '12:30pm – 3:00pm',  afternoon);
+  const adult     = slots.filter(s=>s.session==='adult');
+  renderSummerSection(tl, 'All Day',       '🌞', '9:00am – 3:00pm',   allday);
+  renderSummerSection(tl, 'Morning',       '🌅', '9:00am – 11:30am',  morning);
+  renderSummerSection(tl, 'Afternoon',     '🌇', '12:30pm – 3:00pm',  afternoon);
+  renderSummerSection(tl, 'Adult Clinics', '<span class="cball cball-purple"></span>', '', adult);
 }
 
 // ---- WHAT'S NEW ---- (edit this list to add announcements)
