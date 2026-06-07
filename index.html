@@ -947,8 +947,10 @@ function _edit(day, session, programIncludes, opts){
 // MONDAY: base template (Kein W + Mia S off) + per-clinic tweaks
 const _monday = _summerDay(['Kein W','Mia S']);
 _edit(_monday, 'morning',   'LTC Indoor',      {add:['Bella N']});       // Bella N to morning LTC only
-_edit(_monday, 'afternoon', 'LTC Elite — Group 1', {remove:['Flynn H']}); // move Flynn...
-_edit(_monday, 'afternoon', 'LTC Indoor',      {add:['Flynn H']});        // ...to afternoon LTC camp
+_edit(_monday, 'morning',   'LTC Elite — Group 1', {remove:['Flynn H']}); // move Flynn (morning)...
+_edit(_monday, 'morning',   'LTC Indoor',      {add:['Flynn H']});        // ...to morning LTC camp
+_edit(_monday, 'afternoon', 'LTC Elite — Group 1', {remove:['Flynn H']}); // Flynn out of afternoon Elite...
+_edit(_monday, 'afternoon', 'LTC Indoor',      {add:['Flynn H']});        // ...into afternoon LTC camp
 const SCHEDULE = {
   Monday:    [..._monday,                        ..._ADULT.Monday],
   Tuesday:   [..._summerDay(['Kein W']),         ..._ADULT.Tuesday],
