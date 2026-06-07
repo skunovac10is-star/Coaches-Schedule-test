@@ -901,7 +901,7 @@ const _SUMMER_DAY = [
   {session:'morning',   program:'LTC Elite — Group 2',       time:'9–11:30am',   courts:'Courts 13-16 · at LEGACY',    campers:12, type:'comp',  coaches:['Andrew W','Kris W','Shevi A','Stevie D']},
 
   // AFTERNOON — 12:30–3:00pm
-  {session:'afternoon', program:'LTC Indoor',                time:'12:30–3pm',   courts:'All 8 indoor courts',         campers:22, type:'comp',  coaches:['Kein W','Brady C','Mia S','Laurence P','Sean T','Nick F','Scotty S']},
+  {session:'afternoon', program:'LTC Indoor',                time:'12:30–3pm',   courts:'All 8 indoor courts',         campers:22, type:'comp',  coaches:['Kein W','Mia S','Laurence P','Sean T','Nick F','Scotty S']},
   {session:'afternoon', program:'LTC Elite — Group 1',       time:'12:30–3pm',   courts:'Courts 9-12 · at LEGACY',     campers:12, type:'comp',  coaches:['Jeremie C','Gabe K','Flynn H','Joe H']},
   {session:'afternoon', program:'LTC Elite — Group 2',       time:'12:30–3pm',   courts:'Courts 13-16 · at LEGACY',    campers:12, type:'comp',  coaches:['Andrew W','Kris W','Stevie D']},
 ];
@@ -936,8 +936,21 @@ const _ADULT = {
     {session:'adult', slot:'midday',  program:'Adv Beginner', courts:'11:00am–12:30pm', type:'adult', coaches:['Joe H','Julian C']},
   ],
 };
+// Per-clinic editor for day-specific tweaks: find a clinic by session+program and add/remove coaches
+function _edit(day, session, programIncludes, opts){
+  const s = day.find(x=>x.session===session && x.program.indexOf(programIncludes)>-1);
+  if(!s) return day;
+  if(opts.remove) s.coaches = s.coaches.filter(c=>!opts.remove.includes(c));
+  if(opts.add) opts.add.forEach(c=>{ if(!s.coaches.includes(c)) s.coaches.push(c); });
+  return day;
+}
+// MONDAY: base template (Kein W + Mia S off) + per-clinic tweaks
+const _monday = _summerDay(['Kein W','Mia S']);
+_edit(_monday, 'morning',   'LTC Indoor',      {add:['Bella N']});       // Bella N to morning LTC only
+_edit(_monday, 'afternoon', 'LTC Elite — Group 1', {remove:['Flynn H']}); // move Flynn...
+_edit(_monday, 'afternoon', 'LTC Indoor',      {add:['Flynn H']});        // ...to afternoon LTC camp
 const SCHEDULE = {
-  Monday:    [..._summerDay(['Kein W','Mia S']), ..._ADULT.Monday],
+  Monday:    [..._monday,                        ..._ADULT.Monday],
   Tuesday:   [..._summerDay(['Kein W']),         ..._ADULT.Tuesday],
   Wednesday: [..._summerDay(),                   ..._ADULT.Wednesday],
   Thursday:  [..._summerDay(),                   ..._ADULT.Thursday],
