@@ -909,28 +909,29 @@ function _summerDay(removeNames){
   return _SUMMER_DAY.map(s=>({...s, coaches:s.coaches.filter(c=>!rm.includes(c))}));
 }
 // ===== ADULT CLINICS (purple) — coaches TBD, Sanjin to staff =====
+// slot: 'midday' (daytime clinics, slot between morning & afternoon camp) or 'evening' (6:30pm, end of day)
 const _ADULT = {
   Monday:[
-    {session:'adult', program:'Adv Beginner', courts:'11:30am–12:30pm', type:'adult', coaches:['David S']},
-    {session:'adult', program:'3.5+',         courts:'6:30–8:00pm',     type:'adult', coaches:['Laurence P','Shevi A']},
+    {session:'adult', slot:'midday',  program:'Adv Beginner', courts:'11:30am–12:30pm', type:'adult', coaches:['David S']},
+    {session:'adult', slot:'evening', program:'3.5+',         courts:'6:30–8:00pm',     type:'adult', coaches:['Laurence P','Shevi A']},
   ],
   Tuesday:[
-    {session:'adult', program:'2.5–3.0',      courts:'6:30–8:00pm',     type:'adult', coaches:['Shevi A','Laurence P','Joe H','Julian C']},
+    {session:'adult', slot:'evening', program:'2.5–3.0',      courts:'6:30–8:00pm',     type:'adult', coaches:['Shevi A','Laurence P','Joe H','Julian C']},
   ],
   Wednesday:[
-    {session:'adult', program:'Beginner',     courts:'11:30am–12:30pm', type:'adult', coaches:['David S']},
-    {session:'adult', program:'Adv Beginner', courts:'6:30–8:00pm',     type:'adult', coaches:['Laurence P','Shevi A']},
+    {session:'adult', slot:'midday',  program:'Beginner',     courts:'11:30am–12:30pm', type:'adult', coaches:['David S']},
+    {session:'adult', slot:'evening', program:'Adv Beginner', courts:'6:30–8:00pm',     type:'adult', coaches:['Laurence P','Shevi A']},
   ],
   Thursday:[
-    {session:'adult', program:'3.5+',         courts:'6:30–8:00pm',     type:'adult', coaches:['Laurence P','Shevi A']},
+    {session:'adult', slot:'evening', program:'3.5+',         courts:'6:30–8:00pm',     type:'adult', coaches:['Laurence P','Shevi A']},
   ],
   Friday:[],
   Saturday:[],
   Sunday:[
-    {session:'adult', program:'2.5–3.0',      courts:'9:30–11:00am',    type:'adult', coaches:['Shevi A','Flynn H']},
-    {session:'adult', program:'3.5+',         courts:'9:30–11:00am',    type:'adult', coaches:['Joe H','Julian C']},
-    {session:'adult', program:'Beginner',     courts:'11:00am–12:30pm', type:'adult', coaches:['Shevi A','Flynn H']},
-    {session:'adult', program:'Adv Beginner', courts:'11:00am–12:30pm', type:'adult', coaches:['Joe H','Julian C']},
+    {session:'adult', slot:'midday',  program:'2.5–3.0',      courts:'9:30–11:00am',    type:'adult', coaches:['Shevi A','Flynn H']},
+    {session:'adult', slot:'midday',  program:'3.5+',         courts:'9:30–11:00am',    type:'adult', coaches:['Joe H','Julian C']},
+    {session:'adult', slot:'midday',  program:'Beginner',     courts:'11:00am–12:30pm', type:'adult', coaches:['Shevi A','Flynn H']},
+    {session:'adult', slot:'midday',  program:'Adv Beginner', courts:'11:00am–12:30pm', type:'adult', coaches:['Joe H','Julian C']},
   ],
 };
 const SCHEDULE = {
@@ -1221,11 +1222,15 @@ function renderSummerDay(tl, slots){
   const allday    = slots.filter(s=>s.session==='allday');
   const morning   = slots.filter(s=>s.session==='morning');
   const afternoon = slots.filter(s=>s.session==='afternoon');
-  const adult     = slots.filter(s=>s.session==='adult');
-  renderSummerSection(tl, 'All Day',       '🌞', '9:00am – 3:00pm',   allday);
-  renderSummerSection(tl, 'Morning',       '🌅', '9:00am – 11:30am',  morning);
-  renderSummerSection(tl, 'Afternoon',     '🌇', '12:30pm – 3:00pm',  afternoon);
-  renderSummerSection(tl, 'Adult Clinics', '<span class="cball cball-purple"></span>', '', adult);
+  const adultMid  = slots.filter(s=>s.session==='adult' && s.slot==='midday');
+  const adultEve  = slots.filter(s=>s.session==='adult' && s.slot==='evening');
+  const purpleBall = '<span class="cball cball-purple"></span>';
+  // Chronological order: All Day → Morning camp → Adult midday → Afternoon camp → Adult evening
+  renderSummerSection(tl, 'All Day',           '🌞', '9:00am – 3:00pm',   allday);
+  renderSummerSection(tl, 'Morning',           '🌅', '9:00am – 11:30am',  morning);
+  renderSummerSection(tl, 'Adult — Midday',    purpleBall, 'late morning / lunch', adultMid);
+  renderSummerSection(tl, 'Afternoon',         '🌇', '12:30pm – 3:00pm',  afternoon);
+  renderSummerSection(tl, 'Adult — Evening',   purpleBall, '6:30 – 8:00pm', adultEve);
 }
 
 // ---- WHAT'S NEW ---- (edit this list to add announcements)
