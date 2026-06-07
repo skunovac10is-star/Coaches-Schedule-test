@@ -231,6 +231,8 @@ body{padding-left:240px;padding-top:58px}
 .summer-card.adult{border-left-color:#7C3AED;background:#F7F3FE}
 .sc-unstaffed{font-size:11.5px;font-weight:600;color:#9333EA;background:#F3E8FF;border:1px dashed #C9A6F0;padding:3px 9px;border-radius:8px}
 .summer-card-courts{font-size:11.5px;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:.5px;background:var(--gray-100);padding:3px 9px;border-radius:8px}
+.summer-card-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.summer-card-campers{font-size:11.5px;font-weight:700;color:#0F5C2E;background:#E4F6EA;border:1px solid #BBE6C9;padding:3px 9px;border-radius:8px;white-space:nowrap}
 .summer-card-chips{display:flex;flex-wrap:wrap;gap:5px}
 .summer-section-meta{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--gray-500);font-weight:500}
 .summer-section-meta .sm-pill{display:inline-flex;align-items:center;gap:4px;background:var(--gray-100);color:var(--gray-700);padding:2px 8px;border-radius:8px;font-weight:600;font-size:10.5px;letter-spacing:.3px}
@@ -891,17 +893,17 @@ const ALL_COACHES = [
 // Render path: if a clinic has `session`, the summer-style cards render instead of timeline.
 const _SUMMER_DAY = [
   // All-day program
-  {session:'allday',    program:'Munchkins',   time:'9am–3pm',     courts:'2 courts', type:'munch', coaches:['Gulia S','Kamryn B']},
+  {session:'allday',    program:'Munchkins',   time:'9am–3pm',     courts:'2 courts', campers:8, type:'munch', coaches:['Gulia S','Kamryn B']},
 
   // MORNING — 9:00–11:30am
-  {session:'morning',   program:'LTC Indoor',                time:'9–11:30am',   courts:'Courts 1-8',                  type:'comp',  coaches:['Kein W','Brady C','Mia S','Laurence P','Sean T','Nick F','Scotty S']},
-  {session:'morning',   program:'LTC Elite — Group 1',       time:'9–11:30am',   courts:'Courts 9-12 · at LEGACY',     type:'comp',  coaches:['Jeremie C','Gabe K','Flynn H','Monet W','Joe H']},
-  {session:'morning',   program:'LTC Elite — Group 2',       time:'9–11:30am',   courts:'Courts 13-16 · at LEGACY',    type:'comp',  coaches:['Andrew W','Kris W','Shevi A','Stevie D']},
+  {session:'morning',   program:'LTC Indoor',                time:'9–11:30am',   courts:'Courts 1-8',                  campers:22, type:'comp',  coaches:['Kein W','Brady C','Mia S','Laurence P','Sean T','Nick F','Scotty S']},
+  {session:'morning',   program:'LTC Elite — Group 1',       time:'9–11:30am',   courts:'Courts 9-12 · at LEGACY',     campers:12, type:'comp',  coaches:['Jeremie C','Gabe K','Flynn H','Monet W','Joe H']},
+  {session:'morning',   program:'LTC Elite — Group 2',       time:'9–11:30am',   courts:'Courts 13-16 · at LEGACY',    campers:12, type:'comp',  coaches:['Andrew W','Kris W','Shevi A','Stevie D']},
 
   // AFTERNOON — 12:30–3:00pm
-  {session:'afternoon', program:'LTC Indoor',                time:'12:30–3pm',   courts:'All 8 indoor courts',         type:'comp',  coaches:['Kein W','Brady C','Mia S','Laurence P','Sean T','Nick F','Scotty S']},
-  {session:'afternoon', program:'LTC Elite — Group 1',       time:'12:30–3pm',   courts:'Courts 9-12 · at LEGACY',     type:'comp',  coaches:['Jeremie C','Gabe K','Flynn H','Joe H']},
-  {session:'afternoon', program:'LTC Elite — Group 2',       time:'12:30–3pm',   courts:'Courts 13-16 · at LEGACY',    type:'comp',  coaches:['Andrew W','Kris W','Stevie D']},
+  {session:'afternoon', program:'LTC Indoor',                time:'12:30–3pm',   courts:'All 8 indoor courts',         campers:22, type:'comp',  coaches:['Kein W','Brady C','Mia S','Laurence P','Sean T','Nick F','Scotty S']},
+  {session:'afternoon', program:'LTC Elite — Group 1',       time:'12:30–3pm',   courts:'Courts 9-12 · at LEGACY',     campers:12, type:'comp',  coaches:['Jeremie C','Gabe K','Flynn H','Joe H']},
+  {session:'afternoon', program:'LTC Elite — Group 2',       time:'12:30–3pm',   courts:'Courts 13-16 · at LEGACY',    campers:12, type:'comp',  coaches:['Andrew W','Kris W','Stevie D']},
 ];
 // Helper: clone the daily template, optionally removing specific coaches that day
 function _summerDay(removeNames){
@@ -1199,10 +1201,17 @@ function renderSummerCard(s){
   const chips = s.coaches.length
     ? s.coaches.map(c=>`<span class="chip ${chipCls(c)}">${c}</span>`).join('')
     : '<span class="sc-unstaffed">Needs staffing</span>';
+  // Registered campers + coach ratio badge (planning aid)
+  let campersBadge = '';
+  if(s.campers != null){
+    const ratio = s.coaches.length ? Math.round(s.campers / s.coaches.length) : null;
+    const ratioTxt = ratio!=null ? ` · 1:${ratio}` : '';
+    campersBadge = `<span class="summer-card-campers">👤 ${s.campers} registered${ratioTxt}</span>`;
+  }
   return `<div class="summer-card ${cls}">
     <div class="summer-card-head">
       <div class="summer-card-title"><span class="sc-ic">${icon}</span>${s.program}</div>
-      <div class="summer-card-courts">${s.courts}</div>
+      <div class="summer-card-meta">${campersBadge}<span class="summer-card-courts">${s.courts}</span></div>
     </div>
     <div class="summer-card-chips">${chips}</div>
   </div>`;
