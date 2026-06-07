@@ -1196,7 +1196,7 @@ function metaHtml(s){
 }
 
 // ---- SCHEDULE ----
-let _summerLayout = (function(){ try{ return localStorage.getItem('summer_layout')||'time'; }catch(e){ return 'time'; } })();
+let _summerLayout = (function(){ try{ return localStorage.getItem('summer_layout')||'group'; }catch(e){ return 'group'; } })();
 function setLayout(mode){
   _summerLayout = mode;
   try{ localStorage.setItem('summer_layout', mode); }catch(e){}
