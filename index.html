@@ -233,6 +233,7 @@ body{padding-left:240px;padding-top:58px}
 .summer-card-courts{font-size:11.5px;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:.5px;background:var(--gray-100);padding:3px 9px;border-radius:8px}
 .summer-card-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end}
 .summer-card-campers{font-size:11.5px;font-weight:700;color:#0F5C2E;background:#E4F6EA;border:1px solid #BBE6C9;padding:3px 9px;border-radius:8px;white-space:nowrap}
+.summer-card-campers.zero{color:#9B1C1C;background:#FAE7E7;border-color:#EFC4C4}
 .summer-card-chips{display:flex;flex-wrap:wrap;gap:5px}
 .summer-section-meta{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--gray-500);font-weight:500}
 .summer-section-meta .sm-pill{display:inline-flex;align-items:center;gap:4px;background:var(--gray-100);color:var(--gray-700);padding:2px 8px;border-radius:8px;font-weight:600;font-size:10.5px;letter-spacing:.3px}
@@ -914,26 +915,26 @@ function _summerDay(removeNames){
 // slot: 'midday' (daytime clinics, slot between morning & afternoon camp) or 'evening' (6:30pm, end of day)
 const _ADULT = {
   Monday:[
-    {session:'adult', slot:'midday',  program:'Adv Beginner', courts:'11:30am–12:30pm', type:'adult', coaches:['David S']},
-    {session:'adult', slot:'evening', program:'3.5+',         courts:'6:30–8:00pm',     type:'adult', coaches:['Laurence P','Shevi A']},
+    {session:'adult', slot:'midday',  program:'Adv Beginner', courts:'11:30am–12:30pm', campers:0,  type:'adult', coaches:['David S']},
+    {session:'adult', slot:'evening', program:'3.5+',         courts:'6:30–8:00pm',     campers:5,  type:'adult', coaches:['Laurence P','Shevi A']},
   ],
   Tuesday:[
-    {session:'adult', slot:'evening', program:'2.5–3.0',      courts:'6:30–8:00pm',     type:'adult', coaches:['Shevi A','Laurence P','Joe H','Julian C']},
+    {session:'adult', slot:'evening', program:'2.5–3.0',      courts:'6:30–8:00pm',     campers:17, type:'adult', coaches:['Shevi A','Laurence P','Joe H','Julian C']},
   ],
   Wednesday:[
-    {session:'adult', slot:'midday',  program:'Beginner',     courts:'11:30am–12:30pm', type:'adult', coaches:['David S']},
+    {session:'adult', slot:'midday',  program:'Beginner',     courts:'11:30am–12:30pm', campers:5,  type:'adult', coaches:['David S']},
     {session:'adult', slot:'evening', program:'Adv Beginner', courts:'6:30–8:00pm',     type:'adult', coaches:['Laurence P','Shevi A']},
   ],
   Thursday:[
-    {session:'adult', slot:'evening', program:'3.5+',         courts:'6:30–8:00pm',     type:'adult', coaches:['Laurence P','Shevi A']},
+    {session:'adult', slot:'evening', program:'3.5+',         courts:'6:30–8:00pm',     campers:6,  type:'adult', coaches:['Laurence P','Shevi A']},
   ],
   Friday:[],
   Saturday:[],
   Sunday:[
-    {session:'adult', slot:'midday',  program:'2.5–3.0',      courts:'9:30–11:00am',    type:'adult', coaches:['Shevi A','Flynn H']},
-    {session:'adult', slot:'midday',  program:'3.5+',         courts:'9:30–11:00am',    type:'adult', coaches:['Joe H','Julian C']},
-    {session:'adult', slot:'midday',  program:'Beginner',     courts:'11:00am–12:30pm', type:'adult', coaches:['Shevi A','Flynn H']},
-    {session:'adult', slot:'midday',  program:'Adv Beginner', courts:'11:00am–12:30pm', type:'adult', coaches:['Joe H','Julian C']},
+    {session:'adult', slot:'midday',  program:'2.5–3.0',      courts:'9:30–11:00am',    campers:12, type:'adult', coaches:['Shevi A','Flynn H']},
+    {session:'adult', slot:'midday',  program:'3.5+',         courts:'9:30–11:00am',    campers:10, type:'adult', coaches:['Joe H','Julian C']},
+    {session:'adult', slot:'midday',  program:'Beginner',     courts:'11:00am–12:30pm', campers:3,  type:'adult', coaches:['Shevi A','Flynn H']},
+    {session:'adult', slot:'midday',  program:'Adv Beginner', courts:'11:00am–12:30pm', campers:3,  type:'adult', coaches:['Joe H','Julian C']},
   ],
 };
 // Per-clinic editor for day-specific tweaks: find a clinic by session+program and add/remove coaches
@@ -1219,9 +1220,10 @@ function renderSummerCard(s){
   // Registered campers + coach ratio badge (planning aid)
   let campersBadge = '';
   if(s.campers != null){
-    const ratio = s.coaches.length ? Math.round(s.campers / s.coaches.length) : null;
-    const ratioTxt = ratio!=null ? ` · 1:${ratio}` : '';
-    campersBadge = `<span class="summer-card-campers">👤 ${s.campers} registered${ratioTxt}</span>`;
+    const showRatio = s.campers > 0 && s.coaches.length;
+    const ratioTxt = showRatio ? ` · 1:${Math.round(s.campers / s.coaches.length)}` : '';
+    const zeroCls = s.campers === 0 ? ' zero' : '';
+    campersBadge = `<span class="summer-card-campers${zeroCls}">👤 ${s.campers} registered${ratioTxt}</span>`;
   }
   return `<div class="summer-card ${cls}">
     <div class="summer-card-head">
