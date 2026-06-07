@@ -883,6 +883,7 @@ const ALL_COACHES = [
   {id:'gulia',name:'Gulia Sheth',abbr:'Gulia S',phone:'',email:'',type:'jr',level:'Summer camp — Munchkins'},
   {id:'joe',name:'Joe Heckley',abbr:'Joe H',phone:'',email:'',type:'jr',level:'Summer camp'},
   {id:'scotty',name:'Scotty S',abbr:'Scotty S',phone:'',email:'',type:'jr',level:'Summer camp'},
+  {id:'julian',name:'Julian Casoban',abbr:'Julian C',phone:'',email:'',type:'pt',level:'Adult clinics'},
 ];
 
 // ===== SUMMER CAMP SCHEDULE — Week 1 (Jun 9–13) =====
@@ -910,15 +911,15 @@ function _summerDay(removeNames){
 // ===== ADULT CLINICS (purple) — coaches TBD, Sanjin to staff =====
 const _ADULT = {
   Monday:[
-    {session:'adult', program:'Adv Beginner', courts:'11:30am–12:30pm', type:'adult', coaches:[]},
-    {session:'adult', program:'3.5+',         courts:'6:30–8:00pm',     type:'adult', coaches:[]},
+    {session:'adult', program:'Adv Beginner', courts:'11:30am–12:30pm', type:'adult', coaches:['David S']},
+    {session:'adult', program:'3.5+',         courts:'6:30–8:00pm',     type:'adult', coaches:['Laurence P','Shevi A']},
   ],
   Tuesday:[
-    {session:'adult', program:'2.5–3.0',      courts:'6:30–8:00pm',     type:'adult', coaches:[]},
+    {session:'adult', program:'2.5–3.0',      courts:'6:30–8:00pm',     type:'adult', coaches:['Shevi A','Laurence P','Joe H','Julian C']},
   ],
   Wednesday:[
-    {session:'adult', program:'Beginner',     courts:'11:30am–12:30pm', type:'adult', coaches:[]},
-    {session:'adult', program:'Adv Beginner', courts:'6:30–8:00pm',     type:'adult', coaches:[]},
+    {session:'adult', program:'Beginner',     courts:'11:30am–12:30pm', type:'adult', coaches:['David S']},
+    {session:'adult', program:'Adv Beginner', courts:'6:30–8:00pm',     type:'adult', coaches:['Laurence P','Shevi A']},
   ],
   Thursday:[
     {session:'adult', program:'3.5+',         courts:'6:30–8:00pm',     type:'adult', coaches:[]},
@@ -926,10 +927,10 @@ const _ADULT = {
   Friday:[],
   Saturday:[],
   Sunday:[
-    {session:'adult', program:'2.5–3.0',      courts:'9:30–11:00am',    type:'adult', coaches:[]},
-    {session:'adult', program:'3.5+',         courts:'9:30–11:00am',    type:'adult', coaches:[]},
-    {session:'adult', program:'Beginner',     courts:'11:00am–12:30pm', type:'adult', coaches:[]},
-    {session:'adult', program:'Adv Beginner', courts:'11:00am–12:30pm', type:'adult', coaches:[]},
+    {session:'adult', program:'2.5–3.0',      courts:'9:30–11:00am',    type:'adult', coaches:['Shevi A','Julian C']},
+    {session:'adult', program:'3.5+',         courts:'9:30–11:00am',    type:'adult', coaches:['Shevi A','Julian C']},
+    {session:'adult', program:'Beginner',     courts:'11:00am–12:30pm', type:'adult', coaches:['Shevi A','Julian C']},
+    {session:'adult', program:'Adv Beginner', courts:'11:00am–12:30pm', type:'adult', coaches:['Shevi A','Julian C']},
   ],
 };
 const SCHEDULE = {
